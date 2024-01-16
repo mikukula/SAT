@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
+from default_database_details import *
 
 DatabaseBase = declarative_base()
 
@@ -60,7 +61,7 @@ class Answer(DatabaseBase):
             
     __tablename__ = 'answers'
     answerID = Column(Integer, Sequence("response_id_seq"), primary_key=True, autoincrement=True)
-    answer = Column(String())
+    answer = Column(String(), unique=True)
     type = Column(String(10))
     comments = Column(String())
     questions = relationship('Question', back_populates='answer')
@@ -68,40 +69,70 @@ class Answer(DatabaseBase):
 
 class Role(DatabaseBase):
     __tablename__ = 'roles'
-    roleID = Column(Integer, Sequence("role_id_seq"), primary_key=True, autoincrement=True)
-    name = Column(String())
+    roleID = Column(String(), primary_key=True)
     description = Column(String())
     questions = relationship('Question', back_populates='role')
+
+def initialise_roles(session):
+    defaultRoles = DefaultRoles()
+    role_list = []
+    for i in range(0, len(defaultRoles.roles)):
+        role_list.append(Role(roleID=defaultRoles.roles[i], description=defaultRoles.descriptions[i]))
+    session.add_all(role_list)
+    session.commit()
+
+def initialise_categories(session):
+    defaultCategories = DefaultCategories()
+    category_list = []
+
+    for i in range(0, len(defaultCategories.categoryID)):
+        category_list.append(Category(categoryID=defaultCategories.categoryID[i], name=defaultCategories.name[i], rationale=defaultCategories.rationale[i], rating=defaultCategories.rating[i]))
+
+    session.add_all(category_list)
+    session.commit()
+
+def initialise_answers(session):
+    answer_list = []
+    defaultAnswers = DefaultAnswers()
+    answer_texts = defaultAnswers.answer_text
+
+    for i in range(0,len(answer_texts)):
+        if i in {2, 6, 11, 12, 21, 22, 25}:
+            answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.MULTIPLE))
+        else:
+            answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.SINGLE))
+
+    session.add_all(answer_list)
+    session.commit()
+
+
+
+
+
+
+
+
+
+
+
 
 def initialise_database():
 
     manager = DatabaseManager()
     session = manager.get_session()
+ 
+    initialise_roles(session)
 
-    admin_role = Role(name='Admin', description='Administrator role')
-    user_role = Role(name='User', description='Regular user role')
-    session.add_all([admin_role, user_role])
-    session.commit()
+    initialise_categories(session)
 
-    # Sample Categories
-    need_category = Category(categoryID='NEE', name='Need', rationale='Sample rationale for need', rating=Category.RatingEnum.NEED)
-    attitude_category = Category(categoryID='ATT', name='Attitude', rationale='Sample rationale for attitude', rating=Category.RatingEnum.ATTITUDE)
-    awareness_category = Category(categoryID='AWA', name='Awareness', rationale='Sample rationale for awareness', rating=Category.RatingEnum.AWARENESS)
-    session.add_all([need_category, attitude_category, awareness_category])
-    session.commit()
-
-    # Sample Answers
-    multiple_answer = Answer(answer='Multiple Choice', type=Answer.TypeEnum.MULTIPLE)
-    single_answer = Answer(answer='Single Choice', type=Answer.TypeEnum.SINGLE)
-    session.add_all([multiple_answer, single_answer])
-    session.commit()
+    initialise_answers(session)
 
     # Sample Questions
-    question1 = Question(text='Sample Question 1', role=admin_role, category=need_category, answer=multiple_answer, weight=1)
-    question2 = Question(text='Sample Question 2', role=user_role, category=attitude_category, answer=single_answer, weight=2)
-    session.add_all([question1, question2])
-    session.commit()
+    #question1 = Question(text='Sample Question 1', role=admin_role, category=need_category, answer=multiple_answer, weight=1)
+    #question2 = Question(text='Sample Question 2', role=user_role, category=attitude_category, answer=single_answer, weight=2)
+    #session.add_all([question1, question2])
+    #session.commit()
 
-    session.close()
+    #session.close()
 
 initialise_database()
