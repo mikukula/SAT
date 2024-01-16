@@ -1,13 +1,13 @@
 from sqlalchemy import create_engine, Column, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 
-Base = declarative_base()
+DatabaseBase = declarative_base()
 
 class DatabaseManager:
 
     def __init__(self, db_url='sqlite:///SATDatabase.db'):
         self.engine = create_engine(db_url, echo=True)
-        self.Base = Base
+        self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         self.create_tables()
@@ -18,13 +18,15 @@ class DatabaseManager:
     def get_session(self):
         return self.Session()
 
-class Question(Base):
+class Question(DatabaseBase):
     __tablename__ = 'questions'
     questionID = Column(Integer, Sequence("question_id_seq"), primary_key=True, autoincrement=True)
     roleID = Column(Integer, ForeignKey('roles.roleID'))
     categoryID = Column(String(3), ForeignKey('categories.categoryID'))
     text = Column(String())
     answerID = Column(Integer, ForeignKey('answers.answerID'))
+    rationale = Column(String())
+    comments = Column(String())
     weight = Column(Integer)
 
     #relationship setup
@@ -36,7 +38,7 @@ class Question(Base):
         CheckConstraint('weight >= 0 AND weight <= 2', name='check_value_range'),
     )
 
-class Category(Base):
+class Category(DatabaseBase):
 
     class RatingEnum(Enum):
         NEED = 'need'
@@ -50,7 +52,7 @@ class Category(Base):
     rating = Column(String(10))
     questions = relationship('Question', back_populates='category')
 
-class Answer(Base):
+class Answer(DatabaseBase):
 
     class TypeEnum(Enum):
         MULTIPLE = 'multiple'
@@ -64,7 +66,7 @@ class Answer(Base):
     questions = relationship('Question', back_populates='answer')
 
 
-class Role(Base):
+class Role(DatabaseBase):
     __tablename__ = 'roles'
     roleID = Column(Integer, Sequence("role_id_seq"), primary_key=True, autoincrement=True)
     name = Column(String())
