@@ -166,7 +166,7 @@ class DefaultAnswers:
                             "Familiar with it , Heard of it and understand the concept , Heard of it, but do not have a clear understanding , Not heard of it",
                             "Marginally , Significantly , To a tangible but unspecified degree , Would not adopt",
                             "Robustness and effectiveness of security measures , Compliance with industry standards and regulations , Integration with the existing technology infrastructure , Scalability and flexibility to adapt to current and future security threats , Ease of implementation , Vendor reputation and trust worthiness , Cost and return on investment , Other (please specify)",
-                            "Yes , No , Unsure",
-                            "Yes , No , Partially",
+                            "Yes , No , Unsure , N/A",
+                            "Yes , No , Partially , N/A",
                             "Increased senior management support , Additional technical capability , Investment , Evidence of security vulnerability , Experience of security breaches , Customer / client demand , Industry recognition (e.g. kitemark) , Regulatory requirement , Other (please specify)"
                         ]
