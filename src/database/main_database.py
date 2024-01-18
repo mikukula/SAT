@@ -1,6 +1,6 @@
-from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Table
+from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Date
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
-from default_database_details import *
+from database.default_database_details import *
 
 DatabaseBase = declarative_base()
 
@@ -11,14 +11,32 @@ class DatabaseManager:
         self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
-        self.create_tables()
-
-    def create_tables(self):
-
-        self.Base.metadata.create_all(self.engine)
+        
 
     def get_session(self):
         return self.Session()
+    
+    def initialise_database(self):
+
+        session = self.get_session()
+        
+        initialise_roles(session)
+
+        initialise_categories(session)
+
+        initialise_answers(session)
+
+        initialise_questions(session)
+
+    
+    def addRole(self, roleID, description):
+        role = Role(roleID=roleID, description=description)
+        session = self.get_session()
+        try:
+            session.add(role)
+            session.commit()
+        except:
+            session.rollback()
 
 class Question(DatabaseBase):
     __tablename__ = 'questions'
@@ -35,10 +53,21 @@ class Question(DatabaseBase):
     role = relationship('Role', secondary='question_role_association', back_populates='questions')
     category = relationship('Category', back_populates='questions')
     answer = relationship('Answer', back_populates='questions')
+    role_specific_wording = relationship('RoleSpecificQuestionWording', back_populates='questions')
+    response = relationship('Response', back_populates='questions')
 
     __table_args__ = (
         CheckConstraint('weight >= 0 AND weight <= 2', name='check_value_range'),
     )
+
+class RoleSpecificQuestionWording(DatabaseBase):
+    __tablename__ = 'role-specific-question-wordings'
+    questionID = Column(Integer, ForeignKey('questions.questionID'), primary_key=True)
+    roleID = Column(String, ForeignKey('roles.roleID'), primary_key=True)
+    wording = Column(String)
+
+    questions = relationship('Question', back_populates='role_specific_wording')
+    role = relationship('Role', back_populates='role_specific_wording')
 
 class Category(DatabaseBase):
 
@@ -73,6 +102,8 @@ class Role(DatabaseBase):
     roleID = Column(String(), primary_key=True)
     description = Column(String())
     questions = relationship('Question', secondary='question_role_association', back_populates='role')
+    role_specific_wording = relationship('RoleSpecificQuestionWording', back_populates='role')
+    user = relationship('User', back_populates='role')
 
 class QuestionRoleAssociation(DatabaseBase):
     __tablename__ = 'question_role_association'
@@ -82,6 +113,29 @@ class QuestionRoleAssociation(DatabaseBase):
 class Response(DatabaseBase):
     __tablename__ = 'responses'
     responseID = Column(Integer, Sequence("response_id_seq"), primary_key=True, autoincrement=True)
+    questionID = Column(Integer, ForeignKey('questions.questionID'))
+    userID = Column(Integer, ForeignKey('users.userID'))
+    response = Column(String())
+    questions = relationship('Question', back_populates='response')
+    user = relationship('User', back_populates='response')
+    survey = relationship('Survey', back_populates='response')
+
+class User(DatabaseBase):
+    __tablename__ = 'users'
+    userID = Column(Integer, Sequence('user_id_seq'), primary_key=True, autoincrement=True)
+    roleID = Column(String(), ForeignKey('roles.roleID'))
+    salt = Column(String())
+    hash = Column(String())
+    admin_rights = Column(Boolean, default=False)
+    role = relationship('Role', back_populates='user')
+    response = relationship('Response', back_populates='user')
+
+class Survey(DatabaseBase):
+    __tablename__ = 'surveys'
+    surveyID = Column(Integer, Sequence('survey_id_seq'), primary_key=True, autoincrement=True)
+    date = Column(Date)
+    responseID = Column(Integer, ForeignKey('responses.responseID'))
+    response = relationship('Response', back_populates='survey')
 
 def initialise_roles(session):
     defaultRoles = DefaultRoles()
@@ -94,7 +148,8 @@ def initialise_roles(session):
         session.commit()
     except:
         session.rollback()
-        return
+    finally:
+        session.close()
 
 def initialise_categories(session):
     defaultCategories = DefaultCategories()
@@ -108,7 +163,8 @@ def initialise_categories(session):
         session.commit()
     except:
         session.rollback()
-        return
+    finally:
+        session.close()
 
 def initialise_answers(session):
     answer_list = []
@@ -125,7 +181,8 @@ def initialise_answers(session):
         session.commit()
     except:
         session.rollback()
-        return
+    finally:
+        session.close()
 
 
 def initialise_questions(session):
@@ -592,25 +649,5 @@ def initialise_questions(session):
         session.commit()
     except:
         session.rollback()
-        return
-        
-
-
-
-
-
-
-def initialise_database():
-
-    manager = DatabaseManager()
-    session = manager.get_session()
- 
-    initialise_roles(session)
-
-    initialise_categories(session)
-
-    initialise_answers(session)
-
-    initialise_questions(session)
-
-initialise_database()
+    finally:
+        session.close()
