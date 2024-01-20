@@ -6,7 +6,7 @@ DatabaseBase = declarative_base()
 
 class DatabaseManager:
 
-    def __init__(self, db_url='sqlite:///SATDatabase.db'):
+    def __init__(self, db_url='sqlite:///C:/Users/mikuk/Documents/SAT/src/database/SATDatabase.db'):
         self.engine = create_engine(db_url, echo=True)
         self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
