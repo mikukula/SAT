@@ -1,7 +1,8 @@
 class DefaultRoles:
     def __init__(self):
-        self.roles = ["CEO", "CFO", "CPO", "CISO", "CIO", "CTO"]
-        self.descriptions = ["A CEO, or Chief Executive Officer, is the top executive in an organization responsible for making major corporate decisions, managing overall operations, and implementing strategies to ensure the company's success.",
+        self.roles = ["UNIVERSAL", "CEO", "CFO", "CPO", "CISO", "CIO", "CTO"]
+        self.descriptions = ["No role is assigned. This role should only be assigned to administrators who are not supposed to take part in surveys and only manage the system.",
+                             "A CEO, or Chief Executive Officer, is the top executive in an organization responsible for making major corporate decisions, managing overall operations, and implementing strategies to ensure the company's success.",
                              "A CFO, or Chief Financial Officer, is a key executive responsible for managing an organization's financial aspects.",
                              "A CPO, or Chief Product Officer, is a senior executive responsible for overseeing the development and management of a company's product strategy.",
                              "A CISO, or Chief Information Security Officer, is a senior executive responsible for the overall cybersecurity strategy and management within an organization.",

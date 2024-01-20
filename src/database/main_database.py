@@ -40,6 +40,8 @@ class DatabaseManager:
         except:
             session.rollback()
 
+    def addUser(self, userID, roleID, password, admin_rights=False):
+        pass
     def getUsernames(self):
         usernames = self.get_session().query(User.userID).all()
         return usernames
