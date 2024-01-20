@@ -1,8 +1,10 @@
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QMessageBox
 from PyQt6.uic import loadUiType, loadUi
+from PyQt6.QtGui import QIcon
 import os
 import re
 from constants import Constants
+from database.main_database import DatabaseManager
 
 #find absolute directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -22,6 +24,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         self.browseButton.clicked.connect(self.onBrowseButtonClick)
         self.nextButton.clicked.connect(self.onNextButtonClick)
         self.fileTextEdit.setPlainText(Constants().getDatabasePath())
+        self.setWindowIcon(QIcon(Constants().main_icon_location))
 
     def onBrowseButtonClick(self):
 
@@ -76,6 +79,16 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         self.setupUiElements()
 
     def onCreateAccountClick(self):
+        
+        if(self.checkUsernameUnique(self.usernameEdit.text()) != True):
+            usernameAlert = QMessageBox()
+            usernameAlert.setWindowTitle("Username alert")
+            passwordAlert.setText("Your username has already been used. Please choose a different one")
+            passwordAlert.setIcon(QMessageBox.Icon.Information)
+            passwordAlert.addButton(QMessageBox.StandardButton.Ok)
+            passwordAlert.exec()
+            return
+        
         if(self.checkPasswordStrength(self.passwordEdit.text()) != True):
             passwordAlert = QMessageBox()
             passwordAlert.setWindowTitle("Password alert")
@@ -83,6 +96,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             passwordAlert.setIcon(QMessageBox.Icon.Information)
             passwordAlert.addButton(QMessageBox.StandardButton.Ok)
             passwordAlert.exec()
+            return
     
     def checkPasswordStrength(self, password):
         # Check if the password has at least 12 characters
@@ -98,6 +112,15 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             return False
 
         # If all conditions are met, the password is strong
+        return True
+    
+    def checkUsernameUnique(self, username):
+        usernames = DatabaseManager().getUsernames()
+
+        for i in range (0, len(usernames)):
+            if(usernames[i][0] == username):
+                return False
+            
         return True
 
 

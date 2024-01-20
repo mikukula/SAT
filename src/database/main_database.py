@@ -1,12 +1,14 @@
 from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Date
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 from database.default_database_details import *
+from constants import Constants
 
 DatabaseBase = declarative_base()
+mainDatabaseConstants = Constants()
 
 class DatabaseManager:
 
-    def __init__(self, db_url='sqlite:///C:/Users/mikuk/Documents/SAT/src/database/SATDatabase.db'):
+    def __init__(self, db_url="sqlite:///" + mainDatabaseConstants.getDatabasePath() + "/" + mainDatabaseConstants.database_name):
         self.engine = create_engine(db_url, echo=True)
         self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
@@ -37,6 +39,10 @@ class DatabaseManager:
             session.commit()
         except:
             session.rollback()
+
+    def getUsernames(self):
+        usernames = self.get_session().query(User.userID).all()
+        return usernames
 
 class Question(DatabaseBase):
     __tablename__ = 'questions'
@@ -122,7 +128,7 @@ class Response(DatabaseBase):
 
 class User(DatabaseBase):
     __tablename__ = 'users'
-    userID = Column(Integer, Sequence('user_id_seq'), primary_key=True, autoincrement=True)
+    userID = Column(String(), primary_key=True)
     roleID = Column(String(), ForeignKey('roles.roleID'))
     salt = Column(String())
     hash = Column(String())
