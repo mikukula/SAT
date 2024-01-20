@@ -83,10 +83,19 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         if(self.checkUsernameUnique(self.usernameEdit.text()) != True):
             usernameAlert = QMessageBox()
             usernameAlert.setWindowTitle("Username alert")
-            passwordAlert.setText("Your username has already been used. Please choose a different one")
-            passwordAlert.setIcon(QMessageBox.Icon.Information)
-            passwordAlert.addButton(QMessageBox.StandardButton.Ok)
-            passwordAlert.exec()
+            usernameAlert.setText("Your username has already been used. Please choose a different one")
+            usernameAlert.setIcon(QMessageBox.Icon.Information)
+            usernameAlert.addButton(QMessageBox.StandardButton.Ok)
+            usernameAlert.exec()
+            return
+        
+        if(self.checkUsernameReq(self.usernameEdit.text()) != True):
+            usernameAlert = QMessageBox()
+            usernameAlert.setWindowTitle("Username alert")
+            usernameAlert.setText("Your username does not fulfill the requirements. Please refer to the guidance below.")
+            usernameAlert.setIcon(QMessageBox.Icon.Information)
+            usernameAlert.addButton(QMessageBox.StandardButton.Ok)
+            usernameAlert.exec()
             return
         
         if(self.checkPasswordStrength(self.passwordEdit.text()) != True):
@@ -97,6 +106,8 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             passwordAlert.addButton(QMessageBox.StandardButton.Ok)
             passwordAlert.exec()
             return
+        
+
     
     def checkPasswordStrength(self, password):
         # Check if the password has at least 12 characters
@@ -121,6 +132,15 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             if(usernames[i][0] == username):
                 return False
             
+        return True
+    
+    def checkUsernameReq(self, username):
+        if(len(username) < 5):
+            return False
+        
+        if not re.match("^[a-zA-Z0-9]+$", username):
+            return False
+        
         return True
 
 

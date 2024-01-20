@@ -6,7 +6,6 @@ import sys
 
 #ui imports
 from PyQt6.QtWidgets import QApplication
-from PyQt6.uic import loadUiType
 
 if __name__ == '__main__':
     
