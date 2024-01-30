@@ -66,6 +66,24 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         self.backButton.clicked.connect(self.onBackClick)
         self.showButton.clicked.connect(self.onShowClick)
 
+        roles = DatabaseManager().getRole()
+        roleIDs = []
+
+        for role in roles:
+            roleIDs.append(role.roleID)
+        
+        self.roleList.addItems(roleIDs)
+        self.roleList.currentTextChanged.connect(self.onRoleIDChange)
+        try:
+            self.roleDescription.setPlainText(roles[0].description)
+        except IndexError as e:
+            print("Can't get description")
+
+    def onRoleIDChange(self, text):
+        role = DatabaseManager().getRole(text)
+        self.roleDescription.setPlainText(role.description)
+
+
     def onShowClick(self):
         if(self.passwordEdit.echoMode() == QLineEdit.EchoMode.Password):
             self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Normal)
@@ -107,6 +125,14 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             passwordAlert.exec()
             return
         
+        databaseManager = DatabaseManager()
+        print(databaseManager.getRole('CEO').roleID)
+        userID = self.usernameEdit.text()
+        password = self.passwordEdit.text()
+        role = self.roleList.currentText()
+        admin_rights = True
+        databaseManager.addUser(userID, role, password, admin_rights)
+        
 
     
     def checkPasswordStrength(self, password):
@@ -126,10 +152,13 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         return True
     
     def checkUsernameUnique(self, username):
-        usernames = DatabaseManager().getUsernames()
+        users = DatabaseManager().getUser()
+        usernames = []
+        for user in users:
+            usernames.append(user.userID)
 
-        for i in range (0, len(usernames)):
-            if(usernames[i][0] == username):
+        for u in usernames:
+            if(u == username):
                 return False
             
         return True

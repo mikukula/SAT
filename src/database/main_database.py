@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 from database.default_database_details import *
 from constants import Constants
+import bcrypt
 
 DatabaseBase = declarative_base()
 mainDatabaseConstants = Constants()
@@ -39,12 +40,42 @@ class DatabaseManager:
             session.commit()
         except:
             session.rollback()
+        finally:
+            session.close()
+
+    def getRole(self, roleID=None):
+        if(roleID == None):
+            return self.get_session().query(Role).all()
+        
+        return self.get_session().query(Role).filter_by(roleID=roleID).first()
+
 
     def addUser(self, userID, roleID, password, admin_rights=False):
-        pass
-    def getUsernames(self):
-        usernames = self.get_session().query(User.userID).all()
-        return usernames
+        hashed_password, salt = self.hashPassword(password)
+        user = User(userID=userID, roleID=roleID, hash=hashed_password, salt=salt, admin_rights=admin_rights)
+        session = self.get_session()
+
+        try:
+            session.add(user)
+            session.commit()
+        except:
+            session.rollback()
+        finally:
+            session.close()
+
+    def hashPassword(self, password):
+        salt = bcrypt.gensalt()
+
+        # Hash the password with the salt
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+
+        return hashed_password, salt
+    
+    
+    def getUser(self, userID=None):
+        if(userID == None):
+            return self.get_session().query(User).all()
+        return self.get_session().query(User).filter_by(userID=userID).first()
 
 class Question(DatabaseBase):
     __tablename__ = 'questions'
