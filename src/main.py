@@ -11,7 +11,7 @@ if __name__ == '__main__':
     
     app = QApplication(sys.argv)
     constants = Constants()
-    DatabaseManager().initialise_database()
+    #DatabaseManager().initialise_database()
     #if(constants.getDatabasePath() == ""):
     #this will be inside the if statement
     window = NewSetupWindow()

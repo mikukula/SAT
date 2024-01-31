@@ -56,6 +56,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             constants.validatePath(self.fileTextEdit.toPlainText())):
 
             constants.setDatabasePath(self.fileTextEdit.toPlainText())
+            DatabaseManager().initialise_database()
             self.setupRegistrationScreen()
             
     
