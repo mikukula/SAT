@@ -5,16 +5,17 @@ from constants import Constants
 import bcrypt
 
 DatabaseBase = declarative_base()
-mainDatabaseConstants = Constants()
 
 class DatabaseManager:
 
-    def __init__(self, db_url="sqlite:///" + mainDatabaseConstants.getDatabasePath() + "/" + mainDatabaseConstants.database_name):
+    def __init__(self):
+        db_url = "sqlite:///" + Constants().getDatabasePath() + "/" + Constants().database_name
+        print(db_url)
         self.engine = create_engine(db_url, echo=True)
         self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
-        
+
 
     def get_session(self):
         return self.Session()

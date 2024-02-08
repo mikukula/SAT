@@ -27,7 +27,7 @@ class Constants:
         return config[self._database_path_entry]
 
     def getDatabasePath(self):
-        return self._database_path
+        return self.loadDatabasePath()
     
     def setDatabasePath(self, new_path):
 
