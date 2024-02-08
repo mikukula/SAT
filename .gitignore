@@ -1,2 +1,3 @@
 SATDatabase.db
-resources
+venv
+config.json

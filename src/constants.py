@@ -56,9 +56,13 @@ class Constants:
             # Attempt to normalize the path
             normalized_path = os.path.normpath(path)
 
-            # Check if the normalized path is valid on Windows in this case
+            # Check if the normalized path is valid on Windows
             if os.path.isabs(normalized_path) and os.name == 'nt':
                 return True
+            elif os.path.isabs(normalized_path) and os.name == 'posix':
+                # Additional checks for a Linux path
+                if normalized_path.startswith('/'):
+                    return True
             else:
                 return False
         except:
