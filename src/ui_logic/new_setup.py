@@ -59,7 +59,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             DatabaseManager().initialise_database()
             self.setupRegistrationScreen()
             
-    
+    #registration screen is displayed
     def setupRegistrationScreen(self):
         loadUi(os.path.join(script_dir, '..', 'ui_design', 'create_account.ui'), self)
         self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Password)
