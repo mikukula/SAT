@@ -1,3 +1,4 @@
 SATDatabase.db
 venv
 config.json
+__pycache__
