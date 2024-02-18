@@ -1,8 +1,13 @@
 from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Date
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
+from cryptography.hazmat.backends import default_backend
+import os
+import bcrypt
+import keyring
+
 from database.default_database_details import *
 from constants import Constants
-import bcrypt
+
 
 DatabaseBase = declarative_base()
 
@@ -52,8 +57,8 @@ class DatabaseManager:
 
 
     def addUser(self, userID, roleID, password, admin_rights=False):
-        hashed_password, salt = self.hashPassword(password)
-        user = User(userID=userID, roleID=roleID, hash=hashed_password, salt=salt, admin_rights=admin_rights)
+        hashed_password = self.hashPassword(password)
+        user = User(userID=userID, roleID=roleID, hash_salt=hashed_password, admin_rights=admin_rights)
         session = self.get_session()
 
         try:
@@ -64,19 +69,48 @@ class DatabaseManager:
         finally:
             session.close()
 
+    def verifyUserByPassword(self, userID, password):
+        user = self.getUser(userID)
+
+        password_bytes = password.encode('utf-8')
+        if(bcrypt.checkpw(password_bytes, user.hash_salt)):
+            return True
+        else:
+            return False
+        
+    def verifyUserBySession(self, userID):
+        if(keyring.get_password("SAT", "user_token") == self.getUser(userID).token):
+            return True
+        else:
+            return False
+
+    def openSessionToken(self, userID):
+        keyring.set_password("SAT", "user_token", os.urandom(32))
+        token = keyring.get_password("SAT", "user_token")
+        session = self.get_session()
+        session.query(User).filter_by(userID=userID).update({"token":token})
+        session.commit()
+
+
     def hashPassword(self, password):
-        salt = bcrypt.gensalt()
 
         # Hash the password with the salt
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-        return hashed_password, salt
+        return hashed_password
+    
+    def generateToken(self):
+        return os.urandom(32)
     
     
-    def getUser(self, userID=None):
-        if(userID == None):
+    def getUser(self, userID=None, token=None):
+    
+        if(token != None):
+            return self.get_session().query(User).filter_by(token=token).first()
+        elif(userID == None):
             return self.get_session().query(User).all()
         return self.get_session().query(User).filter_by(userID=userID).first()
+    
 
 class Question(DatabaseBase):
     __tablename__ = 'questions'
@@ -164,8 +198,8 @@ class User(DatabaseBase):
     __tablename__ = 'users'
     userID = Column(String(), primary_key=True)
     roleID = Column(String(), ForeignKey('roles.roleID'))
-    salt = Column(String())
-    hash = Column(String())
+    hash_salt = Column(String())
+    token = Column(String())
     admin_rights = Column(Boolean, default=False)
     role = relationship('Role', back_populates='user')
     response = relationship('Response', back_populates='user')

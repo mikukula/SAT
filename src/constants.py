@@ -50,7 +50,7 @@ class Constants:
         with open(self._config_file, 'w') as json_file:
             json.dump(data, json_file, indent=2)
 
-
+    
     def validatePath(self, path):
         try:
             # Attempt to normalize the path

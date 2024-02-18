@@ -3,8 +3,11 @@ from PyQt6.uic import loadUiType, loadUi
 from PyQt6.QtGui import QIcon
 import os
 import re
+
+#local imports
 from constants import Constants
 from database.main_database import DatabaseManager
+from ui_logic.dashboard_processing import DashboardWindow
 
 #find absolute directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -14,8 +17,11 @@ ui_file_path = os.path.join(script_dir, '..', 'ui_design', 'new_setup.ui')
 NewSetupWindow, QNewSetupWindowBase = loadUiType(ui_file_path)
 
 class NewSetupWindow(QMainWindow, NewSetupWindow):
+
+
     def __init__(self):
         super().__init__()
+        self.dashboard_window = None
         self.setupUi(self)
         self.setupUiElements()
         
@@ -52,16 +58,29 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
 
         constants = Constants()
 
-        if ((self.radioButtonExistingDatabase.isChecked() or self.radioButtonNewDatabase.isChecked()) and
-            constants.validatePath(self.fileTextEdit.toPlainText())):
+        if(not constants.validatePath(self.fileTextEdit.toPlainText())):
+            usernameAlert = QMessageBox()
+            usernameAlert.setWindowTitle("Path invalid")
+            usernameAlert.setText("Please choose a correct path")
+            usernameAlert.setIcon(QMessageBox.Icon.Warning)
+            usernameAlert.addButton(QMessageBox.StandardButton.Ok)
+            usernameAlert.exec()
+
+        if (self.radioButtonNewDatabase.isChecked()):
 
             constants.setDatabasePath(self.fileTextEdit.toPlainText())
             DatabaseManager().initialise_database()
             self.setupRegistrationScreen()
-            
+
+        elif (self.radioButtonExistingDatabase.isChecked()):
+            constants.setDatabasePath(self.fileTextEdit.toPlainText())
+            #self.loginScreen()
+
+
+    ################################# 
     #registration screen is displayed
     def setupRegistrationScreen(self):
-        loadUi(os.path.join(script_dir, '..', 'ui_design', 'create_account.ui'), self)
+        loadUi(os.path.join(script_dir, '..', 'ui_design', 'create_admin_account.ui'), self)
         self.passwordEdit.setEchoMode(QLineEdit.EchoMode.Password)
         self.createAccountButton.clicked.connect(self.onCreateAccountClick)
         self.backButton.clicked.connect(self.onBackClick)
@@ -133,6 +152,12 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         role = self.roleList.currentText()
         admin_rights = True
         databaseManager.addUser(userID, role, password, admin_rights)
+        databaseManager.openSessionToken(userID)
+        print(databaseManager.verifyUserBySession(userID))
+        self.dashboard_window = DashboardWindow()
+        self.dashboard_window.show()
+        self.close()
+        
         
 
     
@@ -166,9 +191,6 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
     
     def checkUsernameReq(self, username):
         if(len(username) < 5):
-            return False
-        
-        if not re.match("^[a-zA-Z0-9]+$", username):
             return False
         
         return True
