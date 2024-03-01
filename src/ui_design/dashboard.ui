@@ -257,7 +257,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame_3">
+        <widget class="QFrame" name="account_management_frame">
          <property name="maximumSize">
           <size>
            <width>270</width>
@@ -307,56 +307,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame_5">
-         <property name="maximumSize">
-          <size>
-           <width>270</width>
-           <height>70</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QFrame:hover {
-	background-color: lightGray;
-	border-radius: 30px;
-}</string>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QLabel" name="label_7">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap>../../resources/icons/add_user.png</pixmap>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Invite User&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <widget class="QFrame" name="frame_8">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
@@ -378,6 +328,9 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QFrame" name="frame_7">
          <property name="maximumSize">
@@ -450,6 +403,9 @@
              </item>
              <item row="0" column="1">
               <widget class="QLabel" name="usernameLabel">
+               <property name="styleSheet">
+                <string notr="true">QLabel{font-size: 12pt};</string>
+               </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;default-username&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
@@ -457,6 +413,9 @@
              </item>
              <item row="1" column="1">
               <widget class="QLabel" name="roleLabel">
+               <property name="styleSheet">
+                <string notr="true">QLabel{font-size: 12pt};</string>
+               </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;default_role&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>

@@ -14,12 +14,14 @@ DatabaseBase = declarative_base()
 class DatabaseManager:
 
     def __init__(self):
-        db_url = "sqlite:///" + Constants().getDatabasePath() + "/" + Constants().database_name
+        self.constants = Constants()
+        db_url = "sqlite:///" + self.constants.getDatabasePath() + "/" + self.constants.database_name
         print(db_url)
         self.engine = create_engine(db_url, echo=True)
         self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
+        
 
 
     def get_session(self):
@@ -72,6 +74,9 @@ class DatabaseManager:
     def verifyUserByPassword(self, userID, password):
         user = self.getUser(userID)
 
+        if(user is None):
+            return False
+
         password_bytes = password.encode('utf-8')
         if(bcrypt.checkpw(password_bytes, user.hash_salt)):
             return True
@@ -79,17 +84,27 @@ class DatabaseManager:
             return False
         
     def verifyUserBySession(self, userID):
-        if(keyring.get_password("SAT", "user_token") == self.getUser(userID).token):
+        if(keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name) == self.getUser(userID).token):
             return True
         else:
             return False
 
     def openSessionToken(self, userID):
-        keyring.set_password("SAT", "user_token", os.urandom(32))
-        token = keyring.get_password("SAT", "user_token")
+        keyring.set_password(self.constants.keyring_service_name, self.constants.keyring_user_name, os.urandom(32))
+        token = keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
         session = self.get_session()
         session.query(User).filter_by(userID=userID).update({"token":token})
         session.commit()
+
+    def closeSessionToken(self):
+
+        user = self.getUser(token=keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name))
+        keyring.delete_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
+        if(user is not None):
+            session = self.get_session()
+            session.query(User).filter_by(userID=user.userID).update({"token":None})
+            session.commit()
+
 
 
     def hashPassword(self, password):
@@ -99,15 +114,13 @@ class DatabaseManager:
 
         return hashed_password
     
-    def generateToken(self):
-        return os.urandom(32)
     
-    
-    def getUser(self, userID=None, token=None):
-    
-        if(token != None):
+    def getUser(self, userID=None, token="no_token"):
+        if(token is None):
+            return None
+        if(token != "no_token"):
             return self.get_session().query(User).filter_by(token=token).first()
-        elif(userID == None):
+        if(userID == None):
             return self.get_session().query(User).all()
         return self.get_session().query(User).filter_by(userID=userID).first()
     

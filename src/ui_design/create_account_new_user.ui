@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Self Assesment Tool</string>
+   <string>Invite User</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../resources/logos/favicon.png</normaloff>../../resources/logos/favicon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -20,32 +24,30 @@
       <item row="4" column="2">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- at least 5 characters&lt;br/&gt;- only letters and numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- at least 5 characters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Password</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
+      <item row="12" column="2">
+       <widget class="QTextBrowser" name="roleDescription">
+        <property name="maximumSize">
          <size>
-          <width>70</width>
-          <height>20</height>
+          <width>16777215</width>
+          <height>70</height>
          </size>
         </property>
-       </spacer>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 100);
+border: none;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="3">
+       <widget class="QPushButton" name="showButton">
+        <property name="text">
+         <string>Show</string>
+        </property>
+       </widget>
       </item>
       <item row="2" column="2">
        <widget class="QLabel" name="label_6">
@@ -59,8 +61,12 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
-       <widget class="QLineEdit" name="usernameEdit"/>
+      <item row="10" column="1">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Role</string>
+        </property>
+       </widget>
       </item>
       <item row="3" column="1">
        <widget class="QLabel" name="label_2">
@@ -75,48 +81,36 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="2">
-       <widget class="QLabel" name="label_7">
+      <item row="5" column="1">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- at least 12 characters&lt;br/&gt;- at least 1 symbol&lt;br/&gt;- at least 1 uppercase letters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::AutoText</enum>
+         <string>Password</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="2">
-       <widget class="QTextBrowser" name="roleDescription">
-        <property name="maximumSize">
+      <item row="5" column="2">
+       <widget class="QLineEdit" name="passwordEdit"/>
+      </item>
+      <item row="3" column="0">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16777215</width>
-          <height>70</height>
+          <width>70</width>
+          <height>0</height>
          </size>
         </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgba(255, 255, 255, 100);
-border: none;</string>
-        </property>
-       </widget>
+       </spacer>
       </item>
-      <item row="11" column="3">
-       <widget class="QPushButton" name="createAccountButton">
+      <item row="12" column="1">
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Create account</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="1">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Role</string>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="1">
-       <widget class="QPushButton" name="backButton">
-        <property name="text">
-         <string>Back</string>
+         <string>Role description</string>
         </property>
        </widget>
       </item>
@@ -172,25 +166,18 @@ border: none;</string>
         </item>
        </layout>
       </item>
-      <item row="9" column="2">
-       <widget class="QComboBox" name="roleList"/>
-      </item>
-      <item row="10" column="1">
-       <widget class="QLabel" name="label_4">
+      <item row="7" column="2">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Role description</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- at least 12 characters&lt;br/&gt;- at least 1 symbol&lt;br/&gt;- at least 1 uppercase letter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
         </property>
        </widget>
       </item>
-      <item row="5" column="3">
-       <widget class="QPushButton" name="showButton">
-        <property name="text">
-         <string>Show</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <spacer name="horizontalSpacer">
+      <item row="5" column="4">
+       <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -200,13 +187,37 @@ border: none;</string>
         <property name="sizeHint" stdset="0">
          <size>
           <width>70</width>
-          <height>0</height>
+          <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
-      <item row="5" column="2">
-       <widget class="QLineEdit" name="passwordEdit"/>
+      <item row="3" column="2">
+       <widget class="QLineEdit" name="usernameEdit"/>
+      </item>
+      <item row="14" column="3">
+       <widget class="QPushButton" name="createAccountButton">
+        <property name="text">
+         <string>Invite</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="2">
+       <widget class="QComboBox" name="roleList"/>
+      </item>
+      <item row="14" column="1">
+       <widget class="QPushButton" name="backButton">
+        <property name="text">
+         <string>Back</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="2">
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>Administrator</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>

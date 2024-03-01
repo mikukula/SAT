@@ -10,6 +10,8 @@ class Constants:
         self.database_name = "SATDatabase.db"
         script_dir = os.path.dirname(os.path.abspath(__file__))
         self.main_icon_location = os.path.join(script_dir, '..', 'resources/logos', 'favicon.png')
+        self.keyring_service_name = "SAT"
+        self.keyring_user_name = "user_token"
 
 
     def loadDatabasePath(self):

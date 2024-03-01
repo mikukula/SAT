@@ -146,14 +146,12 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             return
         
         databaseManager = DatabaseManager()
-        print(databaseManager.getRole('CEO').roleID)
         userID = self.usernameEdit.text()
         password = self.passwordEdit.text()
         role = self.roleList.currentText()
         admin_rights = True
         databaseManager.addUser(userID, role, password, admin_rights)
         databaseManager.openSessionToken(userID)
-        print(databaseManager.verifyUserBySession(userID))
         self.dashboard_window = DashboardWindow()
         self.dashboard_window.show()
         self.close()
