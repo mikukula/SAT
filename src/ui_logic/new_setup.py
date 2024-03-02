@@ -2,12 +2,12 @@ from PyQt6.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QMessageBox
 from PyQt6.uic import loadUiType, loadUi
 from PyQt6.QtGui import QIcon
 import os
-import re
 
 #local imports
-from constants import Constants
+from constants import ConstantsAndUtilities
 from database.main_database import DatabaseManager
 from ui_logic.dashboard_processing import DashboardWindow
+from ui_logic.login import LoginWindow
 
 #find absolute directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,19 +18,18 @@ NewSetupWindow, QNewSetupWindowBase = loadUiType(ui_file_path)
 
 class NewSetupWindow(QMainWindow, NewSetupWindow):
 
-
     def __init__(self):
         super().__init__()
-        self.dashboard_window = None
         self.setupUi(self)
+        self.constants = ConstantsAndUtilities()
         self.setupUiElements()
         
-
+    
     def setupUiElements(self):
         self.browseButton.clicked.connect(self.onBrowseButtonClick)
         self.nextButton.clicked.connect(self.onNextButtonClick)
-        self.fileTextEdit.setPlainText(Constants().getDatabasePath())
-        self.setWindowIcon(QIcon(Constants().main_icon_location))
+        self.fileTextEdit.setPlainText(self.constants.getDatabasePath())
+        self.setWindowIcon(QIcon(self.constants.main_icon_location))
 
     def onBrowseButtonClick(self):
 
@@ -56,25 +55,27 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
     #move on to registration screen and set the path where the database will be created
     def onNextButtonClick(self):
 
-        constants = Constants()
-
-        if(not constants.validatePath(self.fileTextEdit.toPlainText())):
+        if(not self.constants.validatePath(self.fileTextEdit.toPlainText())):
             usernameAlert = QMessageBox()
             usernameAlert.setWindowTitle("Path invalid")
             usernameAlert.setText("Please choose a correct path")
             usernameAlert.setIcon(QMessageBox.Icon.Warning)
             usernameAlert.addButton(QMessageBox.StandardButton.Ok)
             usernameAlert.exec()
+            return
 
         if (self.radioButtonNewDatabase.isChecked()):
 
-            constants.setDatabasePath(self.fileTextEdit.toPlainText())
-            DatabaseManager().initialise_database()
+            self.constants.setDatabasePath(self.fileTextEdit.toPlainText())
+            self.manager = DatabaseManager()
+            self.manager.initialise_database()
             self.setupRegistrationScreen()
 
         elif (self.radioButtonExistingDatabase.isChecked()):
-            constants.setDatabasePath(self.fileTextEdit.toPlainText())
-            #self.loginScreen()
+            self.constants.setDatabasePath(self.fileTextEdit.toPlainText())
+            self.loginScreen = LoginWindow()
+            self.loginScreen.show()
+            self.close()
 
 
     ################################# 
@@ -86,7 +87,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         self.backButton.clicked.connect(self.onBackClick)
         self.showButton.clicked.connect(self.onShowClick)
 
-        roles = DatabaseManager().getRole()
+        roles = self.manager.getRole()
         roleIDs = []
 
         for role in roles:
@@ -100,7 +101,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             print("Can't get description")
 
     def onRoleIDChange(self, text):
-        role = DatabaseManager().getRole(text)
+        role = self.manager.getRole(text)
         self.roleDescription.setPlainText(role.description)
 
 
@@ -118,7 +119,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
 
     def onCreateAccountClick(self):
         
-        if(self.checkUsernameUnique(self.usernameEdit.text()) != True):
+        if(self.manager.checkUsernameUnique(self.usernameEdit.text()) != True):
             usernameAlert = QMessageBox()
             usernameAlert.setWindowTitle("Username alert")
             usernameAlert.setText("Your username has already been used. Please choose a different one")
@@ -127,7 +128,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             usernameAlert.exec()
             return
         
-        if(self.checkUsernameReq(self.usernameEdit.text()) != True):
+        if(self.constants.checkUsernameReq(self.usernameEdit.text()) != True):
             usernameAlert = QMessageBox()
             usernameAlert.setWindowTitle("Username alert")
             usernameAlert.setText("Your username does not fulfill the requirements. Please refer to the guidance below.")
@@ -136,7 +137,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             usernameAlert.exec()
             return
         
-        if(self.checkPasswordStrength(self.passwordEdit.text()) != True):
+        if(self.constants.checkPasswordStrength(self.passwordEdit.text()) != True):
             passwordAlert = QMessageBox()
             passwordAlert.setWindowTitle("Password alert")
             passwordAlert.setText("Your password is not strong enough. Please refer to the guidence below to create a strong password")
@@ -145,53 +146,15 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             passwordAlert.exec()
             return
         
-        databaseManager = DatabaseManager()
         userID = self.usernameEdit.text()
         password = self.passwordEdit.text()
         role = self.roleList.currentText()
         admin_rights = True
-        databaseManager.addUser(userID, role, password, admin_rights)
-        databaseManager.openSessionToken(userID)
+        self.manager.addUser(userID, role, password, admin_rights)
+        self.manager.openSessionToken(userID)
         self.dashboard_window = DashboardWindow()
         self.dashboard_window.show()
         self.close()
-        
-        
-
-    
-    def checkPasswordStrength(self, password):
-        # Check if the password has at least 12 characters
-        if len(password) < 12:
-            return False
-
-        # Check if the password contains at least 1 symbol
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-            return False
-
-        # Check if the password contains at least 1 uppercase letter
-        if not any(char.isupper() for char in password):
-            return False
-
-        # If all conditions are met, the password is strong
-        return True
-    
-    def checkUsernameUnique(self, username):
-        users = DatabaseManager().getUser()
-        usernames = []
-        for user in users:
-            usernames.append(user.userID)
-
-        for u in usernames:
-            if(u == username):
-                return False
-            
-        return True
-    
-    def checkUsernameReq(self, username):
-        if(len(username) < 5):
-            return False
-        
-        return True
 
 
         

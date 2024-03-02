@@ -1,12 +1,11 @@
 from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Date
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
-from cryptography.hazmat.backends import default_backend
 import os
 import bcrypt
 import keyring
 
 from database.default_database_details import *
-from constants import Constants
+from constants import ConstantsAndUtilities
 
 
 DatabaseBase = declarative_base()
@@ -14,7 +13,7 @@ DatabaseBase = declarative_base()
 class DatabaseManager:
 
     def __init__(self):
-        self.constants = Constants()
+        self.constants = ConstantsAndUtilities()
         db_url = "sqlite:///" + self.constants.getDatabasePath() + "/" + self.constants.database_name
         print(db_url)
         self.engine = create_engine(db_url, echo=True)
@@ -22,7 +21,6 @@ class DatabaseManager:
         self.Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         
-
 
     def get_session(self):
         return self.Session()
@@ -123,6 +121,18 @@ class DatabaseManager:
         if(userID == None):
             return self.get_session().query(User).all()
         return self.get_session().query(User).filter_by(userID=userID).first()
+    
+    def checkUsernameUnique(self, username):
+        users = DatabaseManager().getUser()
+        usernames = []
+        for user in users:
+            usernames.append(user.userID)
+
+        for u in usernames:
+            if(u == username):
+                return False
+            
+        return True
     
 
 class Question(DatabaseBase):

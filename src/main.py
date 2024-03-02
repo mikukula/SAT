@@ -4,7 +4,7 @@ import keyring
 
 #local imports
 from database.main_database import DatabaseManager
-from constants import Constants
+from constants import ConstantsAndUtilities
 from ui_logic.new_setup import *
 from ui_logic.login import LoginWindow
 
@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import QApplication
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
-    constants = Constants()
+    constants = ConstantsAndUtilities()
 
     #if no registered database path found assume a new installation
     #and initialise new setup

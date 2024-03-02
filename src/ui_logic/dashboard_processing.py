@@ -5,8 +5,9 @@ from PyQt6.QtWidgets import QMainWindow, QGridLayout, QWidget
 from PyQt6.QtGui import QIcon, QMouseEvent
 from PyQt6.QtCore import Qt
 
-from constants import Constants
+from constants import ConstantsAndUtilities
 from database.main_database import DatabaseManager
+from ui_logic.create_account import CreateAccountWindow
 
 
 #find absolute directory
@@ -23,7 +24,7 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         self.setupUiElements()
 
     def setupUiElements(self):
-        self.setWindowIcon(QIcon(Constants().main_icon_location))
+        self.setWindowIcon(QIcon(ConstantsAndUtilities().main_icon_location))
         token = keyring.get_password("SAT", "user_token")
         #if dashboard is called without a valid session open quit and open login screen
         if(token is None):
@@ -51,14 +52,13 @@ class DashboardWindow(QMainWindow, DashboardWindow):
 
     
     def onInviteUserClick(self, event: QMouseEvent) -> None:
-        self.invite_window = QMainWindow()
-        loadUi(os.path.join(script_dir, '..', 'ui_design', 'create_account_new_user.ui'), self.invite_window)
-        self.invite_window.show()
+        self.createAccountWindow = CreateAccountWindow()
+        self.createAccountWindow.show()
 
     def onLogoutClick(self, event: QMouseEvent) -> None:
         #delete the token from the database and the machine
         DatabaseManager().closeSessionToken()
-        print(keyring.get_password(Constants().keyring_service_name, Constants().keyring_user_name))
+        print(keyring.get_password(ConstantsAndUtilities().keyring_service_name, ConstantsAndUtilities().keyring_user_name))
         #show the login window
         from ui_logic.login import LoginWindow
         self.loginWindow = LoginWindow()

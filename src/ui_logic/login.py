@@ -1,6 +1,6 @@
 import os
 from PyQt6.uic import loadUi
-from PyQt6.QtWidgets import QMainWindow, QLineEdit
+from PyQt6.QtWidgets import QMainWindow, QLineEdit, QMessageBox
 
 from database.main_database import DatabaseManager
 from ui_logic.dashboard_processing import DashboardWindow
@@ -34,3 +34,10 @@ class LoginWindow(QMainWindow):
             self.dashboard_window = DashboardWindow()
             self.dashboard_window.show()
             self.close()
+        else:
+            userNotFoundAlert = QMessageBox()
+            userNotFoundAlert.setWindowTitle("User not found")
+            userNotFoundAlert.setText("We can't match these details.\nPlease double check your username and password")
+            userNotFoundAlert.setIcon(QMessageBox.Icon.Information)
+            userNotFoundAlert.addButton(QMessageBox.StandardButton.Ok)
+            userNotFoundAlert.exec()

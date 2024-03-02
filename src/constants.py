@@ -1,7 +1,8 @@
 import json
 import os
+import re
 
-class Constants:
+class ConstantsAndUtilities:
     def __init__(self):
         
         self._config_file = 'config.json'
@@ -38,12 +39,23 @@ class Constants:
         
         new_path = os.path.normpath(new_path)
 
+        #unify the path to only include "/" characters
         new_path = new_path.replace('\\', '/')
+
+        # Split the path into directory and filename parts
+        directory, filename = os.path.split(new_path)
+
+        # Check if the path contains a filename
+        if "." in filename:
+            # Remove the filename part if it does
+            new_path = directory
+        
         self._database_path = new_path
 
+        # open the json file and check if it contains the database path
         with open(self._config_file, 'r') as json_file:
             data = json.load(json_file)
-
+        
         if self._database_path_entry not in data:
             self.loadDatabasePath()
 
@@ -69,3 +81,25 @@ class Constants:
                 return False
         except:
             return False
+        
+    def checkPasswordStrength(self, password):
+        # Check if the password has at least 12 characters
+        if len(password) < 12:
+            return False
+
+        # Check if the password contains at least 1 symbol
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            return False
+
+        # Check if the password contains at least 1 uppercase letter
+        if not any(char.isupper() for char in password):
+            return False
+
+        # If all conditions are met, the password is strong
+        return True
+    
+    def checkUsernameReq(self, username):
+        if(len(username) < 5):
+            return False
+        
+        return True
