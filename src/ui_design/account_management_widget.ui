@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
-    <height>386</height>
+    <width>567</width>
+    <height>424</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QFrame" name="account_management_frame">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>80</y>
-     <width>231</width>
-     <height>166</height>
+     <x>120</x>
+     <y>30</y>
+     <width>291</width>
+     <height>251</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -30,20 +30,66 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
+     <widget class="QFrame" name="change_password_frame">
+      <property name="maximumSize">
        <size>
-        <width>20</width>
-        <height>40</height>
+        <width>270</width>
+        <height>70</height>
        </size>
       </property>
-     </spacer>
+      <property name="styleSheet">
+       <string notr="true">QFrame:hover {
+	background-color: lightGray;
+	border-radius: 30px;
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../../resources/icons/change-password-icon.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Change Password&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
     <item>
      <widget class="QFrame" name="invite_user_frame">
+      <property name="maximumSize">
+       <size>
+        <width>270</width>
+        <height>70</height>
+       </size>
+      </property>
       <property name="styleSheet">
        <string notr="true">QFrame:hover {
 	background-color: lightGray;
@@ -88,6 +134,12 @@
     </item>
     <item>
      <widget class="QFrame" name="logout_frame">
+      <property name="maximumSize">
+       <size>
+        <width>270</width>
+        <height>70</height>
+       </size>
+      </property>
       <property name="styleSheet">
        <string notr="true">QFrame:hover {
 	background-color: lightGray;

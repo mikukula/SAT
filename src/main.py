@@ -27,7 +27,7 @@ if __name__ == '__main__':
     #if not found open login screen
     else:
         manager = DatabaseManager()
-        user = manager.getUser(token=keyring.get_password(constants.keyring_service_name, constants.keyring_user_name))
+        user = manager.getCurrentUser()
         if(user is None):
             window = LoginWindow()
         else:

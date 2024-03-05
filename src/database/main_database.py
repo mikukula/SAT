@@ -15,7 +15,6 @@ class DatabaseManager:
     def __init__(self):
         self.constants = ConstantsAndUtilities()
         db_url = "sqlite:///" + self.constants.getDatabasePath() + "/" + self.constants.database_name
-        print(db_url)
         self.engine = create_engine(db_url, echo=True)
         self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
@@ -103,6 +102,17 @@ class DatabaseManager:
             session.query(User).filter_by(userID=user.userID).update({"token":None})
             session.commit()
 
+    def updatePassword(self, userID, new_password):
+        user = self.getUser(userID=userID)
+        hashed_password = self.hashPassword(new_password)
+        if(user is not None):
+            self.closeSessionToken()
+            session = self.get_session()
+            session.query(User).filter_by(userID=user.userID).update({"hash_salt":hashed_password})
+            session.commit()
+            self.openSessionToken(userID)
+
+
 
 
     def hashPassword(self, password):
@@ -121,6 +131,10 @@ class DatabaseManager:
         if(userID == None):
             return self.get_session().query(User).all()
         return self.get_session().query(User).filter_by(userID=userID).first()
+    
+    def getCurrentUser(self):
+        token = keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
+        return self.getUser(token=token)
     
     def checkUsernameUnique(self, username):
         users = DatabaseManager().getUser()
