@@ -1,7 +1,7 @@
 import os
-import keyring
+import time
 from PyQt6.uic import loadUiType, loadUi
-from PyQt6.QtWidgets import QMainWindow, QGridLayout, QWidget, QLineEdit
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt6.QtGui import QIcon, QMouseEvent
 from PyQt6.QtCore import Qt
 
@@ -9,6 +9,7 @@ from constants import ConstantsAndUtilities
 from database.main_database import DatabaseManager
 from ui_logic.create_account import CreateAccountWindow
 from ui_logic.password_change import PasswordChangeWindow
+from ui_logic.question_widget import QuestionWidget
 
 
 #find absolute directory
@@ -33,16 +34,37 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         if(user.admin_rights):
             self.adminLabel.setText("ADMINISTRATOR")
         self.account_management_frame.mousePressEvent = self.onAccountManagementClick
+        self.startSurveyFrame.mousePressEvent = self.onStartSurveyClick
+        self.main_frame_layout = QVBoxLayout(self.main_frame)
+
+    #clear the main frame before setting it up with different children
+    def clearMainFrame(self):
+        #return if there is no layout
+        if(self.main_frame.layout() == None):
+            return
+        #otherwise loop through layout elements and remove them all
+        while self.main_frame.layout().count():
+            item = self.main_frame.layout().takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+        
+        
+
+    #temporary start survey handling
+    def onStartSurveyClick(self, event: QMouseEvent):
+        self.clearMainFrame()
+        self.menu_item_label.setText(self.startSurveyLabel.text())
+        questionWidget = QuestionWidget()
+        self.main_frame_layout.addWidget(questionWidget.question_frame)
 
     #on frame click handling
     def onAccountManagementClick(self, event: QMouseEvent) -> None:
+        
+        self.clearMainFrame()
         account_management_widget = QWidget()
-        self.menu_item_label.setText(self.accountManagementLabel.text())
         loadUi(os.path.join(script_dir, '..', 'ui_design', 'account_management_widget.ui'), account_management_widget)
-
-        layout = QGridLayout(self.main_frame)
-        layout.addWidget(account_management_widget.account_management_frame, 0, 0, alignment=Qt.AlignmentFlag.AlignCenter)
-
+        self.menu_item_label.setText(self.accountManagementLabel.text())
+        self.main_frame_layout.addWidget(account_management_widget.account_management_frame, alignment=Qt.AlignmentFlag.AlignCenter)
         account_management_widget.invite_user_frame.mousePressEvent = self.onInviteUserClick
         account_management_widget.logout_frame.mousePressEvent = self.onLogoutClick
         account_management_widget.change_password_frame.mousePressEvent = self.onChangePasswordClick

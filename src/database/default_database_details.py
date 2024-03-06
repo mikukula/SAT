@@ -145,8 +145,8 @@ class DefaultAnswers:
     def __init__(self):
         
         self.answer_text = [
-                            "SD,D,N,A,SA",
-                            "SD,D,N,A,SA, N/D",
+                            "Strongly Agree,Agree,Neutral,Disagree,Strongly Disagree",
+                            "Strongly Agree,Agree,Neutral,Disagree,Strongly Disagree, N/D",
                             "Desktop / laptop PCs , Smartphones and tablets , Consumer grade smart devices , Enterprise IoT / IIoT devices , Cloud-based storage , Cloud-based applications / services , Operational Technology (OT) , Embedded technologies , Unable to judge",
                             "Highly dependent , Somewhat dependent (we could briefly operate without it) , We use it, but could manage without it , Not at all dependent , Dpn't know",
                             "Client/Customer sensitive , Commercially sensitive , National security , Personally identifiable information , Proprietary Intellectual Property , Don’t know , Other (Please specify)",
