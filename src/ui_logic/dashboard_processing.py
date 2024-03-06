@@ -30,11 +30,14 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         user = DatabaseManager().getCurrentUser()
         self.usernameLabel.setText(user.userID.upper())
         self.roleLabel.setText(user.roleID)
+        if(user.admin_rights):
+            self.adminLabel.setText("ADMINISTRATOR")
         self.account_management_frame.mousePressEvent = self.onAccountManagementClick
 
     #on frame click handling
     def onAccountManagementClick(self, event: QMouseEvent) -> None:
         account_management_widget = QWidget()
+        self.menu_item_label.setText(self.accountManagementLabel.text())
         loadUi(os.path.join(script_dir, '..', 'ui_design', 'account_management_widget.ui'), account_management_widget)
 
         layout = QGridLayout(self.main_frame)

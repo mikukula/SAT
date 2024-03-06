@@ -1,6 +1,5 @@
 #external library imports
 import sys
-import keyring
 
 #local imports
 from database.main_database import DatabaseManager
