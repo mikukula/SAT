@@ -130,8 +130,8 @@ class DefaultCategories:
     def __init__(self):
         self.categoryID = ["TDU", "IAB", "SPI", "STA", "DSA"]
 
-        self.name = ["Technology and data usage", "Incidents and breaches", "Security priority and investment",
-                     "Security in technology adoption", "DSbD-specific awareness"]
+        self.name = ["Technology and Data Usage", "Incidents and Breaches", "Security Priority and Investment",
+                     "Security in Technology Adoption", "DSbD-specific Awareness"]
         
         self.rationale = ["The need for security based upon what the organisation is using the technology for, its dependence upon it, etc.",
                           "Highlights the organisation’s need for security based upon evidence of exposure, plus suggests the extent to which it already on the agenda.",
@@ -145,29 +145,31 @@ class DefaultAnswers:
     def __init__(self):
         
         self.answer_text = [
-                            "Strongly Agree,Agree,Neutral,Disagree,Strongly Disagree",
-                            "Strongly Agree,Agree,Neutral,Disagree,Strongly Disagree, N/D",
-                            "Desktop / laptop PCs , Smartphones and tablets , Consumer grade smart devices , Enterprise IoT / IIoT devices , Cloud-based storage , Cloud-based applications / services , Operational Technology (OT) , Embedded technologies , Unable to judge",
-                            "Highly dependent , Somewhat dependent (we could briefly operate without it) , We use it, but could manage without it , Not at all dependent , Dpn't know",
-                            "Client/Customer sensitive , Commercially sensitive , National security , Personally identifiable information , Proprietary Intellectual Property , Don’t know , Other (Please specify)",
-                            "Strongly resilient , Somewhat resilient , Not very resilient , Not at all resilient , Don’t know",
-                            "Data loss or exposure , Denial of Service attacks , Device loss or theft , Hacking , Insider attacks/misuse , Malware (e.g. ransomware, spyware, virus) , Phishing , Physical breach , System or device failure , User error leading to a security breach , Other (Please specify)",
-                            "No , Rarely , Occasionally , Frequently , Don’t Know",
-                            "Not aware of any issues , Aware of unexploited vulnerabilities , Isolated incident(s) , Moderate issue affecting some users , Large scale issue affecting many users",
-                            "Significantly lower priority , Somewhat lower priority , Unchanged priority , Somewhat higher priority , Significantly higher priority",
-                            "<1% , 1-5% , 6-10% , 11-20% , Over 20%",
-                            "Protection against known cyber threats , Previous security incidents or breaches , Compliance with regulations and standards , Safeguarding data and information , Business continuity , Customer satisfaction , Protecting brand/company/organization reputation , Other (specify)",
-                            "None , Don’t know , Limited budget/resources , Lack of awareness/understanding of security risks , Difficulty in prioritizing security investments against other competing priorities , Lack of executive support and commitment , Inadequate expertise and skills in managing security investments. , Time and effort required , Disruption to current operations and processes , Compatibility with existing systems , uncertainty about the benefits , Resistance to change , Other (please specify)",
-                            "Unwilling , Slightly willing , Moderately willing , Significantly willing",
-                            "Nothing extra , A little more (e.g. up to 5%) , Moderately more (e.g. 5-10%) , Significantly more (e.g. over 10%)",
+                            "Strongly Agree;Agree;Neutral;Disagree;Strongly Disagree",
+                            "Strongly Agree;Agree;Neutral;Disagree;Strongly Disagree;N/D",
+                            "Desktop / laptop PCs;Smartphones and tablets;Consumer grade smart devices;Enterprise IoT / IIoT devices;Cloud-based storage;Cloud-based applications / services;Operational Technology (OT);Embedded technologies;Unable to judge",
+                            "Highly dependent;Somewhat dependent (we could briefly operate without it);We use it, but could manage without it;Not at all dependent;Dpn't know",
+                            "Client/Customer sensitive;Commercially sensitive;National security;Personally identifiable information;Proprietary Intellectual Property;Don’t know;Other (Please specify)",
+                            "Strongly resilient;Somewhat resilient;Not very resilient;Not at all resilient;Don’t know",
+                            "Data loss or exposure;Denial of Service attacks;Device loss or theft;Hacking;Insider attacks/misuse;Malware (e.g. ransomware, spyware, virus);Phishing;Physical breach;System or device failure;User error leading to a security breach;Other (Please specify)",
+                            "No;Rarely;Occasionally;Frequently;Don’t Know",
+                            "Not aware of any issues;Aware of unexploited vulnerabilities;Isolated incident(s);Moderate issue affecting some users;Large scale issue affecting many users",
+                            "Significantly lower priority;Somewhat lower priority;Unchanged priority;Somewhat higher priority;Significantly higher priority",
+                            "<1%;1-5%;6-10%;11-20%;Over 20%",
+                            "Protection against known cyber threats;Previous security incidents or breaches;Compliance with regulations and standards;Safeguarding data and information;Business continuity;Customer satisfaction;Protecting brand/company/organization reputation;Other (specify)",
+                            "None;Don’t know;Limited budget/resources;Lack of awareness/understanding of security risks;Difficulty in prioritizing security investments against other competing priorities;Lack of executive support and commitment;Inadequate expertise and skills in managing security investments.;Time and effort required;Disruption to current operations and processes;Compatibility with existing systems;uncertainty about the benefits;Resistance to change;Other (please specify)",
+                            "Unwilling;Slightly willing;Moderately willing;Significantly willing",
+                            "Nothing extra;A little more (e.g. up to 5%);Moderately more (e.g. 5-10%);Significantly more (e.g. over 10%)",
                             "100%, to be balanced between the three factors.",
-                            "Prioritising security , Tend towards prioritising security , Balanced priority , Tend towards cost saving , Cost saving",
-                            "Unimportant , Somewhat important , Important",
-                            "Weak , Whatever the default is , Hardened , Don’t know",
-                            "Familiar with it , Heard of it and understand the concept , Heard of it, but do not have a clear understanding , Not heard of it",
-                            "Marginally , Significantly , To a tangible but unspecified degree , Would not adopt",
-                            "Robustness and effectiveness of security measures , Compliance with industry standards and regulations , Integration with the existing technology infrastructure , Scalability and flexibility to adapt to current and future security threats , Ease of implementation , Vendor reputation and trust worthiness , Cost and return on investment , Other (please specify)",
-                            "Yes , No , Unsure , N/A",
-                            "Yes , No , Partially , N/A",
-                            "Increased senior management support , Additional technical capability , Investment , Evidence of security vulnerability , Experience of security breaches , Customer / client demand , Industry recognition (e.g. kitemark) , Regulatory requirement , Other (please specify)"
+                            "Prioritising security;Tend towards prioritising security;Balanced priority;Tend towards cost saving;Cost saving",
+                            "Unimportant;Somewhat important;Important",
+                            "Weak;Whatever the default is;Hardened;Don’t know",
+                            "Familiar with it;Heard of it and understand the concept;Heard of it, but do not have a clear understanding;Not heard of it",
+                            "Marginally;Significantly;To a tangible but unspecified degree;Would not adopt",
+                            "Robustness and effectiveness of security measures;Compliance with industry standards and regulations;Integration with the existing technology infrastructure;Scalability and flexibility to adapt to current and future security threats;Ease of implementation;Vendor reputation and trust worthiness;Cost and return on investment;Other (please specify)",
+                            "Yes;No;Unsure;N/A",
+                            "Yes;No;Partially;N/A",
+                            "Increased senior management support;Additional technical capability;Investment;Evidence of security vulnerability;Experience of security breaches;Customer / client demand;Industry recognition (e.g. kitemark);Regulatory requirement;Other (please specify)"
                         ]
+
+

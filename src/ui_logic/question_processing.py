@@ -1,0 +1,232 @@
+import os
+#random unique identifier generator
+import uuid
+#object serialization for saving progress
+import pickle
+#gui imports
+from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QHBoxLayout, QVBoxLayout, QCheckBox
+from PyQt6.QtGui import QMouseEvent
+from PyQt6.uic import loadUi
+
+from database.main_database import DatabaseManager
+
+class QuestionWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        loadUi(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ui_design', 'question_widget.ui'), self)
+        self.next_button.clicked.connect(self.onNextButtonClick)
+        self.back_button.clicked.connect(self.onBackButtonClick)
+        manager = DatabaseManager()
+        user = manager.getCurrentUser()
+        self.questions_for_role = manager.getQuestionsForRole(user.roleID)
+        categories = []
+        self.question_categories_frames = []
+        #add all question categories that have corresponding questions
+        for question in self.questions_for_role:
+            if(question.category not in categories):
+                categories.append(question.category)
+        #add all categories as buttons
+        #and assign the first category as the active category in reverse order
+        #since we are starting from the top and the first element will end up last (think stack)
+        for index, category in enumerate(reversed(categories)):
+            questionCategory = QuestionCategoryFrame(category, self)
+            #inserting at the front is not inefficient but in this case
+            #there are few categories and this approach allows for less
+            #frames to be added
+            self.question_categories_frames.insert(0, questionCategory)
+            self.questionCategoriesFrame.layout().insertWidget(0, questionCategory)
+            #set the first category to be the active category (which in this case is the last element of the loop)
+            if(index == len(categories) - 1):
+                self.onCategoryChanged(questionCategory)
+
+        
+
+    def onCategoryChanged(self, questionCategory, startFromEnd = False):
+        #set the new active category
+        self.active_category_frame = questionCategory
+        #set all question category frames to default
+        for question in self.question_categories_frames:
+            question.setDefaultStyleSheet()
+        #highlight the new current active category
+        questionCategory.highlightCategory()
+        manager = DatabaseManager()
+        if(startFromEnd == False):
+            self.setupQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, questionCategory.category.categoryID)[0])
+        else:
+            self.setupQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, questionCategory.category.categoryID)[-1])
+
+    def setupQuestion(self, question):
+        
+        manager = DatabaseManager()
+        questions = manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, self.active_category_frame.category.categoryID)
+        self.current_question = question
+        question_number = self.findQuestionIndex(question, questions)
+        self.question_number_label.setText(formatHTML(f"Question {question_number + 1} out of {len(questions)}", True))
+        #Display answer instructions based on answer type
+        if(question.answer.type == "single"):
+            self.answer_type_label.setText(formatHTML("Please choose a single most adequate answer", True))
+        else:
+            self.answer_type_label.setText(formatHTML("Please choose all answers that apply", True))
+
+        #setup the question
+        self.question_label.setText(formatHTML(question.text, True))
+
+        #setup the answers
+        self.answers_frame = AnswersFrame(question.answer, self)
+        self.scrollArea.setWidget(self.answers_frame)
+
+        self.progress_label.setText(formatHTML(f"Progress: {round(self.findQuestionIndex(question, self.questions_for_role)/len(self.questions_for_role)*100)}%"))
+
+
+    def onNextButtonClick(self):
+        manager = DatabaseManager()
+        next_question = self.getNextQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, self.active_category_frame.category.categoryID))
+
+        if(next_question is None):
+            current_category_index = self.findCategoryIndex()
+            if(current_category_index == len(self.question_categories_frames) - 1):
+                print("This was the last question")
+            else:
+                self.onCategoryChanged(self.question_categories_frames[current_category_index + 1])
+
+        else:
+            self.setupQuestion(next_question)
+
+    def onBackButtonClick(self):
+        manager = DatabaseManager()
+        previous_question = self.getPreviousQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, self.active_category_frame.category.categoryID))
+
+        if(previous_question is None):
+            current_category_index = self.findCategoryIndex()
+            print("index is none")
+            if(current_category_index == 0):
+                print("This is the first question")
+            else:
+                self.onCategoryChanged(self.question_categories_frames[current_category_index - 1], True)
+        else:
+            self.setupQuestion(previous_question)
+        
+    #loop to find the number of the question within a subset of questions
+    #this function is needed since the same question may appear twice in different parts of memory
+    #hence index() function won't work
+    def findQuestionIndex(self, question, questions):
+        for index, array_question in enumerate(questions):
+            if(array_question.questionID == question.questionID):
+                return index
+            
+    def findCategoryIndex(self):
+        for index, array_category in enumerate(self.question_categories_frames):
+            if(array_category.category.categoryID == self.active_category_frame.category.categoryID):
+                return index
+    
+    #get the next question from a question subset
+    def getNextQuestion(self, questions):
+        current_question_index = self.findQuestionIndex(self.current_question, questions)
+
+        #try to get the next question from the subset or return None if it's the last question
+        try:
+            return questions[current_question_index + 1]
+        except IndexError:
+            return None
+    
+    #get the previous question from a subset of questions
+    #very similar to the previous function but kept separate for readability purpose
+    #and different out of bounds handling
+    def getPreviousQuestion(self, questions):
+        current_question_index = self.findQuestionIndex(self.current_question, questions)
+
+        #try to get the previous question from the subset or return None if it's the last question
+        if(current_question_index > 0):
+            return questions[current_question_index - 1]
+        else:
+            return None
+        
+
+
+#a frame with all the answers
+class AnswersFrame(QFrame):
+    def __init__(self, answer, question_widget: QuestionWidget):
+        super().__init__()
+        self.layout = QVBoxLayout(self)
+        self.answer = answer
+        self.possible_answers = answer.answer.split(';')
+        self.parent_widget = question_widget
+        answer_frames = []
+
+        for possible_answer in self.possible_answers:
+            single_frame = SingleAnswerFrame(possible_answer)
+            answer_frames.append(single_frame)
+            self.layout.addWidget(single_frame)
+
+#a frame for a single answer
+class SingleAnswerFrame(QFrame):
+    def __init__(self, answer_text):
+        super().__init__()
+        self.layout = QHBoxLayout(self)
+        self.answer_text = answer_text
+        self.check_box = QCheckBox()
+        self.check_box.setStyleSheet("""QCheckBox::indicator {
+                                        width: 20px;
+                                        height: 20px;
+                                    }""")
+        self.layout.addWidget(self.check_box)
+        
+        self.answer_label = QLabel()
+        self.answer_label.setMinimumWidth(310)
+        self.answer_label.setWordWrap(True)
+        self.answer_label.setText(formatHTML(answer_text))
+        self.layout.addWidget(self.answer_label)
+        
+
+
+
+class QuestionCategoryFrame(QFrame):
+    def __init__(self, category, question_widget: QuestionWidget):
+        super().__init__()
+        self.category = category
+        self.parent_widget = question_widget
+        self.questionCategoryLabel = QLabel()
+        self.setMinimumSize(182, 65)
+        self.questionCategoryLabel.setWordWrap(True)
+        self.questionCategoryLabel.setText(formatHTML(category.name, True))
+        frame_name = str(uuid.uuid4())
+        self.setObjectName(frame_name)
+        self.setDefaultStyleSheet()
+        questionLayout = QHBoxLayout(self)
+        questionLayout.addWidget(self.questionCategoryLabel)
+        self.mousePressEvent = self.onCategoryClick
+
+    def onCategoryClick(self, event: QMouseEvent):
+        manager = DatabaseManager()
+        available_questions = manager.getQuestionsByCategory(self.category.categoryID)
+        self.parent_widget.question_number_label.setText(self.category.categoryID)
+        self.parent_widget.onCategoryChanged(self)
+
+    def highlightCategory(self):
+        
+        background_style_sheet = f"QFrame#{self.objectName()}"
+        background_style_sheet += """{
+                            background-color: lightGray;
+                        }\n"""
+        self.setStyleSheet(self.styleSheet() + background_style_sheet)
+
+    def setDefaultStyleSheet(self):
+        style_sheet = f"QFrame#{self.objectName()}"
+        style_sheet += """{
+                            border: 2px solid black;
+                            border-radius: 30px;
+                        }\n"""
+        style_sheet += """QFrame:hover {
+	                    background-color: lightGray;
+	                    border-radius: 30px;
+                        }"""
+        self.setStyleSheet(style_sheet)
+
+def formatHTML(text: str, center = False):
+        if(center == True):
+            start_html = "<html><head/><body><p align='center'><span style=' font-size:12pt;'>"
+        else:
+            start_html = "<html><head/><body><p><span style=' font-size:12pt;'>"
+        end_html = "</span></p></body></html>"
+            
+        return start_html + text + end_html

@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Date
-from sqlalchemy.orm import sessionmaker, relationship, declarative_base
+from sqlalchemy.orm import sessionmaker, relationship, declarative_base, joinedload
 import os
 import bcrypt
 import keyring
@@ -136,6 +136,29 @@ class DatabaseManager:
         token = keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
         return self.getUser(token=token)
     
+    def getCategories(self):
+        return self.get_session().query(Category).all()
+    
+    def getCategory(self, categoryID):
+        return self.get_session().query(Category).filter_by(categoryID=categoryID).first()
+    
+    def getQuestionsForRole(self, roleID):
+        return self.get_session().query(Question).join(QuestionRoleAssociation).filter(QuestionRoleAssociation.roleID == roleID).order_by(Question.questionID).all()
+    
+    def getQuestionsByCategory(self, categoryID):
+        return self.get_session().query(Question).options(joinedload(Question.answer)).filter_by(categoryID=categoryID).order_by(Question.questionID).all()
+    
+    def getQuestionsForRoleByCategory(self, roleID, categoryID):
+        return (
+                self.get_session().query(Question)
+                .join(QuestionRoleAssociation)
+                .filter(QuestionRoleAssociation.roleID == roleID)
+                .filter(Question.categoryID == categoryID)
+                .options(joinedload(Question.answer))
+                .order_by(Question.questionID)
+                .all()
+            )
+
     def checkUsernameUnique(self, username):
         users = DatabaseManager().getUser()
         usernames = []

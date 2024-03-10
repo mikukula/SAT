@@ -1,3 +1,5 @@
+#new setup process logic
+
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QMessageBox
 from PyQt6.uic import loadUiType, loadUi
 from PyQt6.QtGui import QIcon
@@ -34,7 +36,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
     def onBrowseButtonClick(self):
 
         file_dialog = QFileDialog()
-
+        #process when an existing database is accessible
         if(self.radioButtonExistingDatabase.isChecked()):
             
             file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)

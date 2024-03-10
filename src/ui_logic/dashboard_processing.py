@@ -9,7 +9,7 @@ from constants import ConstantsAndUtilities
 from database.main_database import DatabaseManager
 from ui_logic.create_account import CreateAccountWindow
 from ui_logic.password_change import PasswordChangeWindow
-from ui_logic.question_widget import QuestionWidget
+from ui_logic.question_processing import QuestionWidget
 
 
 #find absolute directory
@@ -53,7 +53,7 @@ class DashboardWindow(QMainWindow, DashboardWindow):
     #temporary start survey handling
     def onStartSurveyClick(self, event: QMouseEvent):
         self.clearMainFrame()
-        self.menu_item_label.setText(self.startSurveyLabel.text())
+        self.menu_item_label.setText("Survey")
         questionWidget = QuestionWidget()
         self.main_frame_layout.addWidget(questionWidget.question_frame)
 
