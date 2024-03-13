@@ -1,5 +1,4 @@
 import os
-import re
 from PyQt6.uic import loadUi
 from PyQt6.QtWidgets import QMainWindow, QLineEdit, QMessageBox
 

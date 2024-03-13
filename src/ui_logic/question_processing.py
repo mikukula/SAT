@@ -4,11 +4,12 @@ import uuid
 #object serialization for saving progress
 import pickle
 #gui imports
-from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QHBoxLayout, QVBoxLayout, QCheckBox
+from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QHBoxLayout, QVBoxLayout, QCheckBox, QButtonGroup
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.uic import loadUi
 
 from database.main_database import DatabaseManager
+from constants import ConstantsAndUtilities
 
 class QuestionWidget(QWidget):
     def __init__(self):
@@ -75,10 +76,29 @@ class QuestionWidget(QWidget):
         self.answers_frame = AnswersFrame(question.answer, self)
         self.scrollArea.setWidget(self.answers_frame)
 
-        self.progress_label.setText(formatHTML(f"Progress: {round(self.findQuestionIndex(question, self.questions_for_role)/len(self.questions_for_role)*100)}%"))
+        self.progress_label.setText(formatHTML(f"Progress: {round(Answers().getNumberOfAnsweredQuestions()/len(self.questions_for_role)*100)}%"))
+
+        #load previous answers if they exist
+        previous_answer_dictionary = Answers().answers
+        #get all responses to the current question if they exist
+        try:
+            responses = previous_answer_dictionary[self.current_question.questionID]     
+        except KeyError:
+            return
+        
+        #loop through all answer frames and check if the answer is in the list
+        for answer_frame in self.answers_frame.answer_frames:
+            for response in responses:
+                if(answer_frame.answer_text == response):
+                    answer_frame.check_box.setChecked(True)
+
 
 
     def onNextButtonClick(self):
+        #save the current question
+        self.saveAnswer()
+
+        #handle displaying the next question
         manager = DatabaseManager()
         next_question = self.getNextQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, self.active_category_frame.category.categoryID))
 
@@ -93,6 +113,9 @@ class QuestionWidget(QWidget):
             self.setupQuestion(next_question)
 
     def onBackButtonClick(self):
+        #save the current question
+        self.saveAnswer()
+
         manager = DatabaseManager()
         previous_question = self.getPreviousQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, self.active_category_frame.category.categoryID))
 
@@ -105,6 +128,12 @@ class QuestionWidget(QWidget):
                 self.onCategoryChanged(self.question_categories_frames[current_category_index - 1], True)
         else:
             self.setupQuestion(previous_question)
+
+    def saveAnswer(self):
+        answers = self.answers_frame.getCheckedAnswers()
+        answer_texts = [text.answer_text for text in answers]
+        Answers().saveAnswers(self.current_question.questionID, answer_texts)
+
         
     #loop to find the number of the question within a subset of questions
     #this function is needed since the same question may appear twice in different parts of memory
@@ -151,12 +180,25 @@ class AnswersFrame(QFrame):
         self.answer = answer
         self.possible_answers = answer.answer.split(';')
         self.parent_widget = question_widget
-        answer_frames = []
+        self.answer_frames = []
+        self.button_group = QButtonGroup()
 
         for possible_answer in self.possible_answers:
             single_frame = SingleAnswerFrame(possible_answer)
-            answer_frames.append(single_frame)
+            self.answer_frames.append(single_frame)
+            #make the checkbox mutually exclusive is it's a single answer
+            if(question_widget.current_question.answer.type == "single"):
+                self.button_group.addButton(single_frame.check_box)
             self.layout.addWidget(single_frame)
+
+    def getCheckedAnswers(self):
+        checked_answers = []
+        for answer_frame in self.answer_frames:
+            if(answer_frame.check_box.isChecked()):
+                checked_answers.append(answer_frame)
+        return checked_answers
+
+
 
 #a frame for a single answer
 class SingleAnswerFrame(QFrame):
@@ -230,3 +272,34 @@ def formatHTML(text: str, center = False):
         end_html = "</span></p></body></html>"
             
         return start_html + text + end_html
+
+#a class to store all answers
+class Answers:
+    def __init__(self):
+        self.loadAnswers()
+
+    def loadAnswers(self):
+        path = os.path.join(ConstantsAndUtilities().getUserFolder(DatabaseManager().getCurrentUser().userID), 'answers.pkl')
+        try:
+            with open(path, 'rb') as file:
+                self.answers = pickle.load(file)
+        except FileNotFoundError:
+            with open(path, 'w') as file:
+                self.answers = {}
+        except EOFError:
+            self.answers = {}
+
+    def saveAnswers(self, question_id, answer_text):
+        #skip if there is no answer
+        self.answers[question_id] = answer_text
+        with open(os.path.join(ConstantsAndUtilities().getUserFolder(DatabaseManager().getCurrentUser().userID), 'answers.pkl'), 'wb') as file:
+            pickle.dump(self.answers, file)
+
+    def getNumberOfAnsweredQuestions(self):
+        count = 0
+        for key, value in self.answers.items():
+            if(value != []):
+                count += 1
+        return count
+
+    

@@ -10,6 +10,8 @@ from ui_logic.login import LoginWindow
 #ui imports
 from PyQt6.QtWidgets import QApplication
 
+
+
 #app starting point
 if __name__ == '__main__':
     

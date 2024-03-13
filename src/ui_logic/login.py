@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QMainWindow, QLineEdit, QMessageBox
 
 from database.main_database import DatabaseManager
 from ui_logic.dashboard_processing import DashboardWindow
+from constants import ConstantsAndUtilities
 
 class LoginWindow(QMainWindow):
     def __init__(self):
@@ -31,6 +32,7 @@ class LoginWindow(QMainWindow):
 
         if(manager.verifyUserByPassword(username, password)):
             manager.openSessionToken(username)
+            ConstantsAndUtilities().createUserFolder(username)
             self.dashboard_window = DashboardWindow()
             self.dashboard_window.show()
             self.close()

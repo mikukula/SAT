@@ -81,6 +81,15 @@ class ConstantsAndUtilities:
                 return False
         except:
             return False
+    
+    #create folder for specified user's data
+    #might be needed if multiple users log in from the same machine
+    def createUserFolder(self, username):
+        directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'user_data', username))
+        os.makedirs(directory, exist_ok=True)
+
+    def getUserFolder(self, username):
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'user_data', username))
         
     def checkPasswordStrength(self, password):
         # Check if the password has at least 12 characters

@@ -15,7 +15,7 @@ class DatabaseManager:
     def __init__(self):
         self.constants = ConstantsAndUtilities()
         db_url = "sqlite:///" + self.constants.getDatabasePath() + "/" + self.constants.database_name
-        self.engine = create_engine(db_url, echo=True)
+        self.engine = create_engine(db_url, echo=False)
         self.Base = DatabaseBase
         self.Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
