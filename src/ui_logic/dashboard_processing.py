@@ -9,7 +9,8 @@ from constants import ConstantsAndUtilities
 from database.main_database import DatabaseManager
 from ui_logic.create_account import CreateAccountWindow
 from ui_logic.password_change import PasswordChangeWindow
-from ui_logic.question_processing import QuestionWidget
+from ui_logic.question_processing import QuestionWidget, NoQuestionsWidget
+from ui_logic.survey_processing import InviteUsersToSurveyWidget
 
 
 #find absolute directory
@@ -54,8 +55,17 @@ class DashboardWindow(QMainWindow, DashboardWindow):
     def onStartSurveyClick(self, event: QMouseEvent):
         self.clearMainFrame()
         self.menu_item_label.setText("Survey")
-        questionWidget = QuestionWidget()
-        self.main_frame_layout.addWidget(questionWidget.question_frame)
+        manager = DatabaseManager()
+        if(manager.getCurrentUser().roleID != 'UNIVERSAL'):
+            if(manager.getSurveyToCompleteForUser(manager.getCurrentUser().userID) is None):
+                self.main_frame_layout.addWidget(NoQuestionsWidget().noQuestionsLabel)
+                return
+            questionWidget = QuestionWidget(self)
+            self.main_frame_layout.addWidget(questionWidget.question_frame)
+            return
+        invite_to_survey_widget = InviteUsersToSurveyWidget()
+        self.main_frame_layout.addWidget(invite_to_survey_widget.invite_frame)
+        
 
     #on frame click handling
     def onAccountManagementClick(self, event: QMouseEvent) -> None:
@@ -65,7 +75,9 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         loadUi(os.path.join(script_dir, '..', 'ui_design', 'account_management_widget.ui'), account_management_widget)
         self.menu_item_label.setText(self.accountManagementLabel.text())
         self.main_frame_layout.addWidget(account_management_widget.account_management_frame, alignment=Qt.AlignmentFlag.AlignCenter)
-        account_management_widget.invite_user_frame.mousePressEvent = self.onInviteUserClick
+        if(DatabaseManager().getCurrentUser().admin_rights):
+            account_management_widget.account_management_frame.layout().insertWidget(1, account_management_widget.invite_user_frame)
+            account_management_widget.invite_user_frame.mousePressEvent = self.onInviteUserClick
         account_management_widget.logout_frame.mousePressEvent = self.onLogoutClick
         account_management_widget.change_password_frame.mousePressEvent = self.onChangePasswordClick
 

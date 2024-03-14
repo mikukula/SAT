@@ -89,6 +89,7 @@ class ConstantsAndUtilities:
         os.makedirs(directory, exist_ok=True)
 
     def getUserFolder(self, username):
+        self.createUserFolder(username)
         return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'user_data', username))
         
     def checkPasswordStrength(self, password):
@@ -112,3 +113,12 @@ class ConstantsAndUtilities:
             return False
         
         return True
+    
+    def formatHTML(self, text: str, center = False, font_size = 12, font_weight=400):
+        if(center == True):
+            start_html = f"<html><head/><body><p align='center'><span style=' font-size:{font_size}pt; font-weight:{font_weight}'>"
+        else:
+            start_html = f"<html><head/><body><p><span style=' font-size:{font_size}pt; font-weight:{font_weight}'>"
+        end_html = "</span></p></body></html>"
+            
+        return start_html + text + end_html

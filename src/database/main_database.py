@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Date
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base, joinedload
+from datetime import datetime
 import os
 import bcrypt
 import keyring
@@ -68,6 +69,55 @@ class DatabaseManager:
         finally:
             session.close()
 
+    def createSurvey(self):
+        survey = Survey(date=datetime.now())
+        with self.get_session() as session:
+            try:
+                session.add(survey)
+                session.commit()
+                return survey.surveyID
+            except:
+                session.rollback()
+
+    def addResponse(self, questionID, userID, response, surveyID):
+        with self.get_session() as session:
+            new_response = Response(questionID=questionID, userID=userID, response=response, surveyID=surveyID)
+            session.add(new_response)
+            try:
+                session.commit()
+            except:
+                session.rollback()
+
+    def getSurvey(self, surveyID):
+        return self.get_session().query(Survey).filter_by(surveyID=surveyID).first()
+    
+    def getSurveyToCompleteForUser(self, username):
+        with self.get_session() as session:
+            survey = session.query(UserProgress.surveyID).filter(UserProgress.userID == username, UserProgress.survey_finished == False).first()
+            if(survey is not None):
+                return survey.surveyID
+            else:
+                return None
+
+    def inviteUserToSurvey(self, username, surveyID):
+        progress = UserProgress(surveyID=surveyID, userID=username)
+        with self.get_session() as session:
+            try:
+                session.add(progress)
+                session.commit()
+            except:
+                session.rollback()
+
+    def setUserFinishedSurvey(self, surveyID, userID):
+        with self.get_session() as session:
+            try:
+                session.query(UserProgress).filter_by(userID=userID, surveyID=surveyID).update({"survey_finished":True})
+                session.commit()
+            except:
+                session.rollback()
+            
+
+
     def verifyUserByPassword(self, userID, password):
         user = self.getUser(userID)
 
@@ -89,28 +139,38 @@ class DatabaseManager:
     def openSessionToken(self, userID):
         keyring.set_password(self.constants.keyring_service_name, self.constants.keyring_user_name, os.urandom(32))
         token = keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
-        session = self.get_session()
-        session.query(User).filter_by(userID=userID).update({"token":token})
-        session.commit()
+        with self.get_session() as session:
+            try:
+                session.query(User).filter_by(userID=userID).update({"token":token})
+                session.commit()
+            except:
+                session.rollback()
 
     def closeSessionToken(self):
 
         user = self.getUser(token=keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name))
         keyring.delete_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
         if(user is not None):
-            session = self.get_session()
-            session.query(User).filter_by(userID=user.userID).update({"token":None})
-            session.commit()
+            with self.get_session() as session:
+                try:
+                    session.query(User).filter_by(userID=user.userID).update({"token":None})
+                    session.commit()
+                except:
+                    session.rollback()
 
     def updatePassword(self, userID, new_password):
         user = self.getUser(userID=userID)
         hashed_password = self.hashPassword(new_password)
         if(user is not None):
             self.closeSessionToken()
-            session = self.get_session()
-            session.query(User).filter_by(userID=user.userID).update({"hash_salt":hashed_password})
-            session.commit()
-            self.openSessionToken(userID)
+            
+            with self.get_session() as session:
+                try:
+                    session.query(User).filter_by(userID=user.userID).update({"hash_salt":hashed_password})
+                    session.commit()
+                    self.openSessionToken(userID)
+                except:
+                    session.rollback()
 
 
 
@@ -250,6 +310,7 @@ class Response(DatabaseBase):
     questionID = Column(Integer, ForeignKey('questions.questionID'))
     userID = Column(Integer, ForeignKey('users.userID'))
     response = Column(String())
+    surveyID = Column(Integer, ForeignKey('surveys.surveyID'))
     questions = relationship('Question', back_populates='response')
     user = relationship('User', back_populates='response')
     survey = relationship('Survey', back_populates='response')
@@ -263,13 +324,22 @@ class User(DatabaseBase):
     admin_rights = Column(Boolean, default=False)
     role = relationship('Role', back_populates='user')
     response = relationship('Response', back_populates='user')
+    progress = relationship('UserProgress', back_populates='user')
 
 class Survey(DatabaseBase):
     __tablename__ = 'surveys'
     surveyID = Column(Integer, Sequence('survey_id_seq'), primary_key=True, autoincrement=True)
     date = Column(Date)
-    responseID = Column(Integer, ForeignKey('responses.responseID'))
     response = relationship('Response', back_populates='survey')
+    progress = relationship('UserProgress', back_populates='survey')
+
+class UserProgress(DatabaseBase):
+    __tablename__ = 'user_progress'
+    surveyID = Column(Integer, ForeignKey('surveys.surveyID'), primary_key=True)
+    userID = Column(String, ForeignKey('users.userID'), primary_key=True)
+    survey_finished = Column(Boolean, default=False)
+    survey = relationship('Survey', back_populates='progress')
+    user = relationship('User', back_populates='progress')
 
 def initialise_roles(session):
     defaultRoles = DefaultRoles()

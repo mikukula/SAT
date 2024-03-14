@@ -4,7 +4,7 @@ import uuid
 #object serialization for saving progress
 import pickle
 #gui imports
-from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QHBoxLayout, QVBoxLayout, QCheckBox, QButtonGroup
+from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QHBoxLayout, QVBoxLayout, QCheckBox, QButtonGroup, QMessageBox
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.uic import loadUi
 
@@ -12,14 +12,16 @@ from database.main_database import DatabaseManager
 from constants import ConstantsAndUtilities
 
 class QuestionWidget(QWidget):
-    def __init__(self):
+    def __init__(self, parent_widget):
         super().__init__()
         loadUi(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ui_design', 'question_widget.ui'), self)
         self.next_button.clicked.connect(self.onNextButtonClick)
         self.back_button.clicked.connect(self.onBackButtonClick)
+        self.parent_widget = parent_widget
         manager = DatabaseManager()
         user = manager.getCurrentUser()
         self.questions_for_role = manager.getQuestionsForRole(user.roleID)
+        self.current_survey_id = manager.getSurveyToCompleteForUser(user.userID)
         categories = []
         self.question_categories_frames = []
         #add all question categories that have corresponding questions
@@ -62,21 +64,21 @@ class QuestionWidget(QWidget):
         questions = manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, self.active_category_frame.category.categoryID)
         self.current_question = question
         question_number = self.findQuestionIndex(question, questions)
-        self.question_number_label.setText(formatHTML(f"Question {question_number + 1} out of {len(questions)}", True))
+        self.question_number_label.setText(ConstantsAndUtilities().formatHTML(f"Question {question_number + 1} out of {len(questions)}", True))
         #Display answer instructions based on answer type
         if(question.answer.type == "single"):
-            self.answer_type_label.setText(formatHTML("Please choose a single most adequate answer", True))
+            self.answer_type_label.setText(ConstantsAndUtilities().formatHTML("Please choose a single most adequate answer", True))
         else:
-            self.answer_type_label.setText(formatHTML("Please choose all answers that apply", True))
+            self.answer_type_label.setText(ConstantsAndUtilities().formatHTML("Please choose all answers that apply", True))
 
         #setup the question
-        self.question_label.setText(formatHTML(question.text, True))
+        self.question_label.setText(ConstantsAndUtilities().formatHTML(question.text, True))
 
         #setup the answers
         self.answers_frame = AnswersFrame(question.answer, self)
         self.scrollArea.setWidget(self.answers_frame)
 
-        self.progress_label.setText(formatHTML(f"Progress: {round(Answers().getNumberOfAnsweredQuestions()/len(self.questions_for_role)*100)}%"))
+        self.progress_label.setText(ConstantsAndUtilities().formatHTML(f"Progress: {round(Answers().getNumberOfAnsweredQuestions()/len(self.questions_for_role)*100)}%"))
 
         #load previous answers if they exist
         previous_answer_dictionary = Answers().answers
@@ -97,15 +99,30 @@ class QuestionWidget(QWidget):
     def onNextButtonClick(self):
         #save the current question
         self.saveAnswer()
-
         #handle displaying the next question
         manager = DatabaseManager()
         next_question = self.getNextQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, self.active_category_frame.category.categoryID))
-
         if(next_question is None):
             current_category_index = self.findCategoryIndex()
+            #handle the user reaching the last question
             if(current_category_index == len(self.question_categories_frames) - 1):
-                print("This was the last question")
+                if(not self.checkResponsesCompleted()):
+                    complete_all_box = QMessageBox()
+                    complete_all_box.setWindowTitle("Responses not gathered")
+                    complete_all_box.setText("Before you submit please answer all remaining questions.")
+                    complete_all_box.addButton(QMessageBox.StandardButton.Ok)
+                    complete_all_box.exec()
+                    return
+                submit_box = QMessageBox()
+                submit_box.setWindowTitle("Submit Answers")
+                submit_box.setText("The survey is now finished.\nPlease press Ok to submit answers\nor Cancel if you still want to change them.")
+                submit_box.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+                box_clicked = submit_box.exec()
+
+                if(box_clicked == QMessageBox.StandardButton.Ok):
+                    self.submitResponses()
+                elif(box_clicked == QMessageBox.StandardButton.Cancel):
+                    print("change answers")
             else:
                 self.onCategoryChanged(self.question_categories_frames[current_category_index + 1])
 
@@ -133,6 +150,36 @@ class QuestionWidget(QWidget):
         answers = self.answers_frame.getCheckedAnswers()
         answer_texts = [text.answer_text for text in answers]
         Answers().saveAnswers(self.current_question.questionID, answer_texts)
+
+    def checkResponsesCompleted(self):
+        if(Answers().getNumberOfAnsweredQuestions() == len(self.questions_for_role)):
+            return True
+        return False
+    
+    def submitResponses(self):
+        answers = Answers().answers
+        manager = DatabaseManager()
+        current_user = manager.getCurrentUser().userID
+        #the first survey is always processed first
+        try:
+            current_survey = manager.getSurveyToCompleteForUser(current_user)
+        #return if there are no surveys
+        #would mean a bug or database tampering
+        except IndexError:
+            return
+
+        for questionID, all_answers in answers.items():
+            for single_answer in all_answers:
+                manager.addResponse(questionID, current_user, single_answer, current_survey)
+
+        manager.setUserFinishedSurvey(current_survey, current_user)
+        Answers().deleteAnswers()
+        self.parent_widget.onStartSurveyClick(None)
+        
+        
+        
+
+
 
         
     #loop to find the number of the question within a subset of questions
@@ -216,7 +263,7 @@ class SingleAnswerFrame(QFrame):
         self.answer_label = QLabel()
         self.answer_label.setMinimumWidth(310)
         self.answer_label.setWordWrap(True)
-        self.answer_label.setText(formatHTML(answer_text))
+        self.answer_label.setText(ConstantsAndUtilities().formatHTML(answer_text))
         self.layout.addWidget(self.answer_label)
         
 
@@ -230,7 +277,7 @@ class QuestionCategoryFrame(QFrame):
         self.questionCategoryLabel = QLabel()
         self.setMinimumSize(182, 65)
         self.questionCategoryLabel.setWordWrap(True)
-        self.questionCategoryLabel.setText(formatHTML(category.name, True))
+        self.questionCategoryLabel.setText(ConstantsAndUtilities().formatHTML(category.name, True))
         frame_name = str(uuid.uuid4())
         self.setObjectName(frame_name)
         self.setDefaultStyleSheet()
@@ -264,27 +311,22 @@ class QuestionCategoryFrame(QFrame):
                         }"""
         self.setStyleSheet(style_sheet)
 
-def formatHTML(text: str, center = False):
-        if(center == True):
-            start_html = "<html><head/><body><p align='center'><span style=' font-size:12pt;'>"
-        else:
-            start_html = "<html><head/><body><p><span style=' font-size:12pt;'>"
-        end_html = "</span></p></body></html>"
-            
-        return start_html + text + end_html
 
 #a class to store all answers
 class Answers:
     def __init__(self):
+        manager = DatabaseManager()
+        self.surveyID = manager.getSurveyToCompleteForUser(manager.getCurrentUser().userID)
+        self.path_to_file = os.path.join(ConstantsAndUtilities().getUserFolder(DatabaseManager().getCurrentUser().userID), f'answers{self.surveyID}.pkl')
         self.loadAnswers()
 
     def loadAnswers(self):
-        path = os.path.join(ConstantsAndUtilities().getUserFolder(DatabaseManager().getCurrentUser().userID), 'answers.pkl')
+        
         try:
-            with open(path, 'rb') as file:
+            with open(self.path_to_file, 'rb') as file:
                 self.answers = pickle.load(file)
         except FileNotFoundError:
-            with open(path, 'w') as file:
+            with open(self.path_to_file, 'w') as file:
                 self.answers = {}
         except EOFError:
             self.answers = {}
@@ -292,8 +334,12 @@ class Answers:
     def saveAnswers(self, question_id, answer_text):
         #skip if there is no answer
         self.answers[question_id] = answer_text
-        with open(os.path.join(ConstantsAndUtilities().getUserFolder(DatabaseManager().getCurrentUser().userID), 'answers.pkl'), 'wb') as file:
+        with open(self.path_to_file, 'wb') as file:
             pickle.dump(self.answers, file)
+
+    def deleteAnswers(self):
+        if(os.path.exists(self.path_to_file)):
+            os.remove(self.path_to_file)
 
     def getNumberOfAnsweredQuestions(self):
         count = 0
@@ -301,5 +347,10 @@ class Answers:
             if(value != []):
                 count += 1
         return count
-
     
+class NoQuestionsWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.noQuestionsLabel = QLabel()
+        self.noQuestionsLabel.setWordWrap(True)
+        self.noQuestionsLabel.setText(ConstantsAndUtilities().formatHTML("There are currently no surveys for you to do.", True, 16, 600))

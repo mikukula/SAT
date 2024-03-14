@@ -65,5 +65,12 @@ class PasswordChangeWindow(QMainWindow):
             passwordAlert.exec()
         else:
             manager.updatePassword(currentUser.userID, new_password)
+            passwordAlert = QMessageBox()
+            passwordAlert.setWindowTitle("Password Alert")
+            passwordAlert.setText("Your password has been changed successfully")
+            passwordAlert.setIcon(QMessageBox.Icon.Information)
+            passwordAlert.addButton(QMessageBox.StandardButton.Ok)
+            passwordAlert.exec()
+            self.close()
 
         
