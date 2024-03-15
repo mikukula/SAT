@@ -172,8 +172,8 @@ class QuestionWidget(QWidget):
             for single_answer in all_answers:
                 manager.addResponse(questionID, current_user, single_answer, current_survey)
 
-        manager.setUserFinishedSurvey(current_survey, current_user)
         Answers().deleteAnswers()
+        manager.setUserFinishedSurvey(current_survey, current_user)
         self.parent_widget.onStartSurveyClick(None)
         
         
@@ -338,6 +338,7 @@ class Answers:
             pickle.dump(self.answers, file)
 
     def deleteAnswers(self):
+        print(self.path_to_file)
         if(os.path.exists(self.path_to_file)):
             os.remove(self.path_to_file)
 
