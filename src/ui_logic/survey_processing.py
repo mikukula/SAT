@@ -1,8 +1,6 @@
 import os
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QHBoxLayout, QVBoxLayout, QCheckBox, QButtonGroup
-from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QHBoxLayout, QCheckBox, QMessageBox
 from PyQt6.uic import loadUi
 
 from database.main_database import DatabaseManager
@@ -39,6 +37,12 @@ class InviteUsersToSurveyWidget(QWidget):
         survey_id = manager.createSurvey()
         for frame in self.user_frames:
             manager.inviteUserToSurvey(frame.username, manager.getSurvey(survey_id).surveyID)
+
+        submitted_box = QMessageBox()
+        submitted_box.setWindowTitle("Survey created")
+        submitted_box.setText("The survey has been created.")
+        submitted_box.addButton(QMessageBox.StandardButton.Ok)
+        submitted_box.exec()
 
 #a frame for a single user
 #similar to SingleAnswerFrame in question_processing module

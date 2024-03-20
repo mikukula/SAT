@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>725</width>
+    <height>552</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>60</y>
+     <width>261</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>191</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>../../resources/icons/survey.webp</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
