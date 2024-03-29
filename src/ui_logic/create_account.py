@@ -76,8 +76,8 @@ class CreateAccountWindow(QMainWindow):
         userID = self.usernameEdit.text()
         password = self.passwordEdit.text()
         role = self.roleList.currentText()
-        admin_rights = self.adminCheckBox.isChecked()
-        self.database_manager.addUser(userID, role, password, admin_rights)
+        is_technical = self.technical_checkbox.isChecked()
+        self.database_manager.addUser(userID, role, password, is_technical)
         accountCreatedInfo = QMessageBox()
         accountCreatedInfo.setWindowTitle("Account Created")
         accountCreatedInfo.setText("The account with username " + userID + " has been created successfully.\n" +

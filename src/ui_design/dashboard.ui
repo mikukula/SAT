@@ -10,6 +10,12 @@
     <height>646</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Self Assesment Tool</string>
   </property>
@@ -207,7 +213,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame_6">
+        <widget class="QFrame" name="view_stats_frame">
          <property name="maximumSize">
           <size>
            <width>270</width>
@@ -446,6 +452,12 @@
        </item>
        <item>
         <widget class="QFrame" name="main_frame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="styleSheet">
           <string notr="true">QFrame#main_frame{
     border: 2px solid black;

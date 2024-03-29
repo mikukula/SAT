@@ -56,9 +56,9 @@ class DatabaseManager:
         return self.get_session().query(Role).filter_by(roleID=roleID).first()
 
 
-    def addUser(self, userID, roleID, password, admin_rights=False):
+    def addUser(self, userID, roleID, password, is_technical=False):
         hashed_password = self.hashPassword(password)
-        user = User(userID=userID, roleID=roleID, hash_salt=hashed_password, admin_rights=admin_rights)
+        user = User(userID=userID, roleID=roleID, hash_salt=hashed_password, is_technical=is_technical)
         session = self.get_session()
 
         try:
@@ -69,8 +69,12 @@ class DatabaseManager:
         finally:
             session.close()
 
-    def createSurvey(self):
-        survey = Survey(date=datetime.now())
+    def createSurvey(self, date=None):
+        if(date is None):
+            survey = Survey(date=datetime.now())
+        else:
+            survey = Survey(date=date)
+
         with self.get_session() as session:
             try:
                 session.add(survey)
@@ -88,7 +92,11 @@ class DatabaseManager:
             except:
                 session.rollback()
 
-    def getSurvey(self, surveyID):
+    def getSurvey(self, surveyID=None, date=None):
+        if(surveyID is None and date is None):
+            return self.get_session().query(Survey).all()
+        if(date is not None):
+            return self.get_session().query(Survey).filter_by(date=date).first()
         return self.get_session().query(Survey).filter_by(surveyID=surveyID).first()
     
     def getSurveyToCompleteForUser(self, username):
@@ -173,8 +181,6 @@ class DatabaseManager:
                     session.rollback()
 
 
-
-
     def hashPassword(self, password):
 
         # Hash the password with the salt
@@ -197,16 +203,29 @@ class DatabaseManager:
         return self.getUser(token=token)
     
     def getCategories(self):
-        return self.get_session().query(Category).all()
+        return self.get_session().query(Category).order_by(Category.categoryID).all()
     
     def getCategory(self, categoryID):
         return self.get_session().query(Category).filter_by(categoryID=categoryID).first()
     
     def getQuestionsForRole(self, roleID):
-        return self.get_session().query(Question).join(QuestionRoleAssociation).filter(QuestionRoleAssociation.roleID == roleID).order_by(Question.questionID).all()
+        return self.get_session().query(Question).options(joinedload(Question.answer), joinedload(Question.category)).join(QuestionRoleAssociation).filter(QuestionRoleAssociation.roleID == roleID).order_by(Question.questionID).all()
     
-    def getQuestionsByCategory(self, categoryID):
-        return self.get_session().query(Question).options(joinedload(Question.answer)).filter_by(categoryID=categoryID).order_by(Question.questionID).all()
+    def getQuestionsByCategory(self, categoryID = None, category_name = None):
+        if(categoryID is not None):
+            return self.get_session().query(Question).options(joinedload(Question.answer)).filter_by(categoryID=categoryID).order_by(Question.questionID).all()
+        elif(category_name is not None):
+            return self.get_session().query(Question).options(joinedload(Question.answer)).join(Category, Question.categoryID == Category.categoryID).filter(Category.name == category_name).order_by(Question.questionID).all()
+    
+    def getQuestions(self):
+        return self.get_session().query(Question).order_by(Question.questionID).all()
+    
+    def getQuestion(self, qID = None, qText = None):
+        if(qID is not None):
+            return self.get_session().query(Question).options(joinedload(Question.answer)).filter_by(questionID=qID).first()
+        elif(qText is not None):
+            return self.get_session().query(Question).options(joinedload(Question.answer)).filter_by(text=qText).first()
+    
     
     def getQuestionsForRoleByCategory(self, roleID, categoryID):
         return (
@@ -216,6 +235,18 @@ class DatabaseManager:
                 .filter(Question.categoryID == categoryID)
                 .options(joinedload(Question.answer))
                 .order_by(Question.questionID)
+                .all()
+            )
+    
+    def getResponse(self, roleID, surveyID, questionID):
+        with self.get_session() as session:
+            return (
+                session.query(Response)
+                .join(User)
+                .filter(User.roleID == roleID)
+                .filter(Response.surveyID == surveyID)
+                .filter(Response.questionID == questionID)
+                .order_by(Response.responseID)
                 .all()
             )
 
@@ -321,7 +352,7 @@ class User(DatabaseBase):
     roleID = Column(String(), ForeignKey('roles.roleID'))
     hash_salt = Column(String())
     token = Column(String())
-    admin_rights = Column(Boolean, default=False)
+    is_technical = Column(Boolean, default=False)
     role = relationship('Role', back_populates='user')
     response = relationship('Response', back_populates='user')
     progress = relationship('UserProgress', back_populates='user')

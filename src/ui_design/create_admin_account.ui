@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>548</height>
+    <width>578</width>
+    <height>522</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,45 +17,13 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="4" column="2">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- at least 5 characters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
+      <item row="5" column="2">
+       <widget class="QLineEdit" name="passwordEdit"/>
       </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="label_3">
+      <item row="9" column="3">
+       <widget class="QPushButton" name="createAccountButton">
         <property name="text">
-         <string>Password</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>70</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_6">
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;PLEASE CREATE A&lt;br/&gt;NEW ADMINISTRATOR ACCOUNT&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Create account</string>
         </property>
        </widget>
       </item>
@@ -75,8 +43,32 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_6">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;PLEASE CREATE A&lt;br/&gt;NEW ADMINISTRATOR ACCOUNT&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
       <item row="6" column="2">
        <widget class="QLabel" name="label_7">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>60</height>
+         </size>
+        </property>
         <property name="text">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- at least 12 characters&lt;br/&gt;- at least 1 symbol&lt;br/&gt;- at least 1 uppercase letters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
@@ -85,103 +77,23 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="2">
-       <widget class="QTextBrowser" name="roleDescription">
+      <item row="5" column="1">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Password</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="label_5">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>70</height>
+          <height>30</height>
          </size>
         </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgba(255, 255, 255, 100);
-border: none;</string>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="3">
-       <widget class="QPushButton" name="createAccountButton">
         <property name="text">
-         <string>Create account</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="1">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Role</string>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="1">
-       <widget class="QPushButton" name="backButton">
-        <property name="text">
-         <string>Back</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_8">
-          <property name="maximumSize">
-           <size>
-            <width>180</width>
-            <height>180</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap>../../resources/logos/logo_transparent.png</pixmap>
-          </property>
-          <property name="scaledContents">
-           <bool>true</bool>
-          </property>
-          <property name="margin">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="9" column="2">
-       <widget class="QComboBox" name="roleList"/>
-      </item>
-      <item row="10" column="1">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Role description</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;- at least 5 characters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -189,6 +101,29 @@ border: none;</string>
        <widget class="QPushButton" name="showButton">
         <property name="text">
          <string>Show</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="4">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>70</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="9" column="1">
+       <widget class="QPushButton" name="backButton">
+        <property name="text">
+         <string>Back</string>
         </property>
        </widget>
       </item>
@@ -208,8 +143,45 @@ border: none;</string>
         </property>
        </spacer>
       </item>
-      <item row="5" column="2">
-       <widget class="QLineEdit" name="passwordEdit"/>
+      <item row="1" column="2">
+       <widget class="QFrame" name="">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>150</height>
+         </size>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="logo_label">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>170</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../../resources/logos/logo_transparent.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </item>
@@ -220,7 +192,7 @@ border: none;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>586</width>
+     <width>578</width>
      <height>22</height>
     </rect>
    </property>

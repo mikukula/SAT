@@ -76,6 +76,7 @@ class QuestionWidget(QWidget):
 
         #setup the answers
         self.answers_frame = AnswersFrame(question.answer, self)
+        self.answers_frame.layout.addStretch()
         self.scrollArea.setWidget(self.answers_frame)
 
         self.progress_label.setText(ConstantsAndUtilities().formatHTML(f"Progress: {round(Answers().getNumberOfAnsweredQuestions()/len(self.questions_for_role)*100)}%"))
@@ -265,6 +266,11 @@ class SingleAnswerFrame(QFrame):
         self.answer_label.setWordWrap(True)
         self.answer_label.setText(ConstantsAndUtilities().formatHTML(answer_text))
         self.layout.addWidget(self.answer_label)
+        self.layout.addStretch()
+        self.answer_label.mousePressEvent = self.changeCheckboxState
+
+    def changeCheckboxState(self, event: QMouseEvent):
+        self.check_box.setChecked(not self.check_box.isChecked())
         
 
 

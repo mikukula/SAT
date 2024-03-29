@@ -1,7 +1,7 @@
 import os
 import time
 from PyQt6.uic import loadUiType, loadUi
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QSizePolicy
 from PyQt6.QtGui import QIcon, QMouseEvent
 from PyQt6.QtCore import Qt
 
@@ -11,6 +11,7 @@ from ui_logic.create_account import CreateAccountWindow
 from ui_logic.password_change import PasswordChangeWindow
 from ui_logic.question_processing import QuestionWidget, NoQuestionsWidget
 from ui_logic.survey_processing import InviteUsersToSurveyWidget
+from ui_logic.data_visualisation import GraphWidget
 
 
 #find absolute directory
@@ -25,6 +26,7 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         super().__init__()
         self.setupUi(self)
         self.setupUiElements()
+        self.onStartSurveyClick(None)
 
     def setupUiElements(self):
         self.setWindowIcon(QIcon(ConstantsAndUtilities().main_icon_location))
@@ -32,10 +34,11 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         user = DatabaseManager().getCurrentUser()
         self.usernameLabel.setText(user.userID.upper())
         self.roleLabel.setText(user.roleID)
-        if(user.admin_rights):
+        if(user.roleID == "UNIVERSAL"):
             self.adminLabel.setText("ADMINISTRATOR")
         self.account_management_frame.mousePressEvent = self.onAccountManagementClick
         self.startSurveyFrame.mousePressEvent = self.onStartSurveyClick
+        self.view_stats_frame.mousePressEvent = self.onViewStatsClick
         self.main_frame_layout = QVBoxLayout(self.main_frame)
 
     #clear the main frame before setting it up with different children
@@ -75,7 +78,7 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         loadUi(os.path.join(script_dir, '..', 'ui_design', 'account_management_widget.ui'), account_management_widget)
         self.menu_item_label.setText(self.accountManagementLabel.text())
         self.main_frame_layout.addWidget(account_management_widget.account_management_frame, alignment=Qt.AlignmentFlag.AlignCenter)
-        if(DatabaseManager().getCurrentUser().admin_rights):
+        if(DatabaseManager().getCurrentUser().roleID == "UNIVERSAL"):
             account_management_widget.account_management_frame.layout().insertWidget(1, account_management_widget.invite_user_frame)
             account_management_widget.invite_user_frame.mousePressEvent = self.onInviteUserClick
         account_management_widget.logout_frame.mousePressEvent = self.onLogoutClick
@@ -97,5 +100,14 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         self.loginWindow = LoginWindow()
         self.loginWindow.show()
         self.close()
+
+    def onViewStatsClick(self, event: QMouseEvent):
+        self.clearMainFrame()
+        self.menu_item_label.setText("Statistics")
+        
+        if(DatabaseManager().getCurrentUser().roleID == 'UNIVERSAL'):
+            graph = GraphWidget()
+            
+            self.main_frame_layout.addWidget(graph.frame)
 
 

@@ -1,6 +1,7 @@
 #new setup process logic
 
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QMessageBox
+from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUiType, loadUi
 from PyQt6.QtGui import QIcon
 import os
@@ -88,23 +89,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         self.createAccountButton.clicked.connect(self.onCreateAccountClick)
         self.backButton.clicked.connect(self.onBackClick)
         self.showButton.clicked.connect(self.onShowClick)
-
-        roles = self.manager.getRole()
-        roleIDs = []
-
-        for role in roles:
-            roleIDs.append(role.roleID)
-        
-        self.roleList.addItems(roleIDs)
-        self.roleList.currentTextChanged.connect(self.onRoleIDChange)
-        try:
-            self.roleDescription.setPlainText(roles[0].description)
-        except IndexError as e:
-            print("Can't get description")
-
-    def onRoleIDChange(self, text):
-        role = self.manager.getRole(text)
-        self.roleDescription.setPlainText(role.description)
+        self.gridLayout.setAlignment(self.logo_label, Qt.AlignmentFlag.AlignRight)
 
 
     def onShowClick(self):
@@ -150,9 +135,7 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
         
         userID = self.usernameEdit.text()
         password = self.passwordEdit.text()
-        role = self.roleList.currentText()
-        admin_rights = True
-        self.manager.addUser(userID, role, password, admin_rights)
+        self.manager.addUser(userID, "UNIVERSAL", password)
         self.manager.openSessionToken(userID)
         self.dashboard_window = DashboardWindow()
         self.dashboard_window.show()

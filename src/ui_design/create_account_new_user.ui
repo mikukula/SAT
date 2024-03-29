@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>654</width>
-    <height>594</height>
+    <width>646</width>
+    <height>568</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -209,9 +209,9 @@ border: none;</string>
        <widget class="QComboBox" name="roleList"/>
       </item>
       <item row="11" column="2">
-       <widget class="QCheckBox" name="adminCheckBox">
+       <widget class="QCheckBox" name="technical_checkbox">
         <property name="text">
-         <string>Administrator</string>
+         <string>Technical</string>
         </property>
        </widget>
       </item>
@@ -224,7 +224,7 @@ border: none;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>654</width>
+     <width>646</width>
      <height>22</height>
     </rect>
    </property>
