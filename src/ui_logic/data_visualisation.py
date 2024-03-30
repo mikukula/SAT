@@ -60,6 +60,10 @@ class GraphWidget(QWidget):
 
         manager = DatabaseManager()
         current_question = manager.getQuestion(qText=self.questionBox.currentText())
+
+        #check if no survey data available
+        if(self.surveyBox.currentText() == ""):
+            return
         graph_widget = MatplotlibWidget(current_question, manager.getSurvey(date=datetime.strptime(self.surveyBox.currentText(), "%Y-%m-%d").date()), 
                                         self.viewBox.currentText())
         self.graph_layout.addWidget(graph_widget)

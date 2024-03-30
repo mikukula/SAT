@@ -17,18 +17,18 @@ if __name__ == '__main__':
     
     app = QApplication(sys.argv)
     constants = ConstantsAndUtilities()
-    manager = DatabaseManager()
 
     #if there is no registered database path or no users
     #are found assume a new installation
     #and initialise new setup
-    if(constants.getDatabasePath() == "" or manager.getUser() == []):
+    if(constants.getDatabasePath() == "" or DatabaseManager().getUser() == []):
         window = NewSetupWindow()
 
     #if not a new install check for session token and if found
     #log in right away
     #if not found open login screen
     else:
+        manager = DatabaseManager()
         user = manager.getCurrentUser()
         if(user is None):
             window = LoginWindow()
