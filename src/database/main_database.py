@@ -407,7 +407,7 @@ def initialise_answers(session):
     answer_texts = defaultAnswers.answer_text
 
     for i in range(0,len(answer_texts)):
-        if i in {2, 6, 11, 12, 21, 22, 25}:
+        if i in {2, 6, 11, 12, 21, 25}:
             answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.MULTIPLE))
         else:
             answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.SINGLE))
