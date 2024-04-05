@@ -14,6 +14,7 @@ from database.main_database import DatabaseManager
 class GraphWidget(QWidget):
     def __init__(self):
         super().__init__()
+        self.current_graph = None
         script_dir = os.path.dirname(os.path.abspath(__file__))
         loadUi(os.path.join(script_dir, '..', 'ui_design', 'graph_widget.ui'), self)
         self.setupUi()
@@ -58,15 +59,22 @@ class GraphWidget(QWidget):
             if widget is not None:
                 widget.deleteLater()
 
+        self.deleteGraph()
+
         manager = DatabaseManager()
         current_question = manager.getQuestion(qText=self.questionBox.currentText())
 
         #check if no survey data available
         if(self.surveyBox.currentText() == ""):
             return
-        graph_widget = MatplotlibWidget(current_question, manager.getSurvey(date=datetime.strptime(self.surveyBox.currentText(), "%Y-%m-%d").date()), 
+        self.current_graph = MatplotlibWidget(current_question, manager.getSurvey(date=datetime.strptime(self.surveyBox.currentText(), "%Y-%m-%d").date()), 
                                         self.viewBox.currentText())
-        self.graph_layout.addWidget(graph_widget)
+        self.graph_layout.addWidget(self.current_graph)
+
+    def deleteGraph(self):
+        if(self.current_graph is not None):
+            plt.close(self.current_graph.current_figure)
+            self.current_graph = None
 
     
 
@@ -76,6 +84,7 @@ class GraphWidget(QWidget):
 class MatplotlibWidget(QWidget):
     def __init__(self, question, survey, view_type):
         super().__init__()
+        self.current_figure = None
         layout = QVBoxLayout()
 
         if(view_type == "Role"):
@@ -122,7 +131,8 @@ class MatplotlibWidget(QWidget):
 
         # Adjust the layout and display the plot
         plt.tight_layout()
-        return fig
+        self.current_figure = fig
+        return self.current_figure
     
     def plotHorizontalGraph(self, question, surveyID):
 
@@ -153,7 +163,8 @@ class MatplotlibWidget(QWidget):
         ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         
         plt.tight_layout()
-        return fig
+        self.current_figure = fig
+        return self.current_figure
     
     def getResponseArray(self, surveyID, question, answers, users):
 

@@ -148,7 +148,7 @@ class DefaultAnswers:
                             "Strongly Agree;Agree;Neutral;Disagree;Strongly Disagree",
                             "Strongly Agree;Agree;Neutral;Disagree;Strongly Disagree;N/D",
                             "Desktop / laptop PCs;Smartphones and tablets;Consumer grade smart devices;Enterprise IoT / IIoT devices;Cloud-based storage;Cloud-based applications / services;Operational Technology (OT);Embedded technologies;Unable to judge",
-                            "Highly dependent;Somewhat dependent (we could briefly operate without it);We use it, but could manage without it;Not at all dependent;Dpn't know",
+                            "Highly dependent;Somewhat dependent (we could briefly operate without it);We use it, but could manage without it;Not at all dependent;Don't know",
                             "Client/Customer sensitive;Commercially sensitive;National security;Personally identifiable information;Proprietary Intellectual Property;Don’t know;Other",
                             "Strongly resilient;Somewhat resilient;Not very resilient;Not at all resilient;Don’t know",
                             "Data loss or exposure;Denial of Service attacks;Device loss or theft;Hacking;Insider attacks/misuse;Malware (e.g. ransomware, spyware, virus);Phishing;Physical breach;System or device failure;User error leading to a security breach;Other",

@@ -24,6 +24,7 @@ DashboardWindow, QDashboardWindow = loadUiType(ui_file_path)
 class DashboardWindow(QMainWindow, DashboardWindow):
     def __init__(self):
         super().__init__()
+        self.graph = None
         self.setupUi(self)
         self.setupUiElements()
         self.onStartSurveyClick(None)
@@ -51,6 +52,9 @@ class DashboardWindow(QMainWindow, DashboardWindow):
             item = self.main_frame.layout().takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
+
+        if(self.graph is not None):
+            self.graph.deleteGraph()
         
         
 
@@ -106,8 +110,8 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         self.menu_item_label.setText("Statistics")
         
         if(DatabaseManager().getCurrentUser().roleID == 'UNIVERSAL'):
-            graph = GraphWidget()
+            self.graph = GraphWidget()
             
-            self.main_frame_layout.addWidget(graph.frame)
+            self.main_frame_layout.addWidget(self.graph.frame)
 
 

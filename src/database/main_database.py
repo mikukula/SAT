@@ -202,6 +202,9 @@ class DatabaseManager:
         token = keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
         return self.getUser(token=token)
     
+    def getUsersByTechnicality(self, is_technical):
+        return self.get_session().query(User).filter_by(is_technical=is_technical).all()
+    
     def getCategories(self):
         return self.get_session().query(Category).order_by(Category.categoryID).all()
     
