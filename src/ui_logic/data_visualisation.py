@@ -34,7 +34,7 @@ class GraphWidget(QWidget):
         self.categoryBox.addItems(["All"] + [category.name for category in reversed(categories)])
         self.categoryBox.currentIndexChanged.connect(lambda: self.repopulateQuestions())
 
-        self.viewBox.addItems(["Role", "Response"])
+        self.viewBox.addItems(["Role", "Response", "Technicality"])
         self.viewBox.currentIndexChanged.connect(lambda: self.redrawGraph())
 
         self.graph_layout = QVBoxLayout(self.graph_frame)
@@ -89,8 +89,10 @@ class MatplotlibWidget(QWidget):
 
         if(view_type == "Role"):
             self.canvas = FigureCanvas(self.plotGraph(question, survey.surveyID))
-        else:
+        elif(view_type == "Response"):
             self.canvas = FigureCanvas(self.plotHorizontalGraph(question, survey.surveyID))
+        else:
+            self.canvas = FigureCanvas(self.plotHorizontalGraphByTechnicality(question, survey.surveyID))
 
         self.canvas.figure.set_facecolor('none')
         self.canvas.setStyleSheet("background-color: transparent;")
@@ -139,7 +141,6 @@ class MatplotlibWidget(QWidget):
         responses = question.answer.answer.split(';')
         users = [user for user in DatabaseManager().getUser() if user.roleID != 'UNIVERSAL']
         data = self.getResponseArray(surveyID, question, responses, users)
-
         num_responses = len(responses)
         
         fig, ax = plt.subplots(figsize=(8, 4))
@@ -162,6 +163,38 @@ class MatplotlibWidget(QWidget):
         ax.set_title(textwrap.fill(question.text, width=40))
         ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         
+        plt.tight_layout()
+        self.current_figure = fig
+        return self.current_figure
+    
+    def plotHorizontalGraphByTechnicality(self, question, surveyID):
+
+        responses = question.answer.answer.split(';')
+        users = [user for user in DatabaseManager().getUser() if user.roleID != 'UNIVERSAL']
+        data = self.getResponseArray(surveyID, question, responses, users)
+        num_responses = len(responses)
+        fig, ax = plt.subplots(figsize=(8, 4))
+        bar_height = 0.4
+        y = np.arange(num_responses)
+        
+        
+        technical_roles = [user.roleID for user in DatabaseManager().getUsersByTechnicality(True)]
+        non_technical_roles = [user.roleID for user in DatabaseManager().getUsersByTechnicality(False)]
+        
+        # Combine responses for each user group
+        technical_data = np.sum([data[i] for i, user in enumerate(users) if user.roleID in technical_roles], axis=0)
+        non_technical_data = np.sum([data[i] for i, user in enumerate(users) if user.roleID in non_technical_roles], axis=0)
+        
+        # Plot the combined data for each user group
+        ax.barh(y, technical_data, height=bar_height, label='Technical Users', color='blue')
+        ax.barh(y, non_technical_data, height=bar_height, left=technical_data, label='Non-Technical Users', color='orange')
+        
+        ax.set_yticks(y)
+        ax.set_yticklabels(responses)
+        ax.legend(title='User Group', bbox_to_anchor=(1.02, 1), loc='upper left')
+        ax.set_xlabel('Number of Responses')
+        ax.set_title(textwrap.fill(question.text, width=40))
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         plt.tight_layout()
         self.current_figure = fig
         return self.current_figure
