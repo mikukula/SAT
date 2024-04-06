@@ -24,7 +24,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QFrame" name="frame_2">
+       <widget class="QFrame" name="graph_setting_frame">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -41,23 +41,6 @@
          <item row="1" column="2">
           <widget class="QComboBox" name="categoryBox"/>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="questionBox">
-           <property name="maximumSize">
-            <size>
-             <width>500</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Survey:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QLabel" name="label_3">
            <property name="text">
@@ -72,8 +55,25 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="survey_label">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Survey:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="0">
           <widget class="QComboBox" name="surveyBox"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="questionBox">
+           <property name="maximumSize">
+            <size>
+             <width>500</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item row="0" column="3">
           <widget class="QLabel" name="label_4">

@@ -1,5 +1,4 @@
 import os
-import time
 from PyQt6.uic import loadUiType, loadUi
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QSizePolicy
 from PyQt6.QtGui import QIcon, QMouseEvent
