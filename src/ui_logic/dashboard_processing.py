@@ -34,8 +34,7 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         user = DatabaseManager().getCurrentUser()
         self.usernameLabel.setText(user.userID.upper())
         self.roleLabel.setText(user.roleID)
-        if(user.roleID == "UNIVERSAL"):
-            self.adminLabel.setText("ADMINISTRATOR")
+        
         self.account_management_frame.mousePressEvent = self.onAccountManagementClick
         self.startSurveyFrame.mousePressEvent = self.onStartSurveyClick
         self.view_stats_frame.mousePressEvent = self.onViewStatsClick
@@ -112,5 +111,3 @@ class DashboardWindow(QMainWindow, DashboardWindow):
             self.graph = GraphWidget()
             
             self.main_frame_layout.addWidget(self.graph.frame)
-
-

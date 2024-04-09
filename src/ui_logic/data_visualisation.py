@@ -323,7 +323,7 @@ class MatplotlibWidget(QWidget):
 #checkable combo box implementation from
 #https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 #originally written for PyQt5, changes were made to make it work with PyQt6
-#currentData and callback handling are my own additions
+#setCheckedItemsByIndex and callback handling are own additions
 class CheckableComboBox(QComboBox):
 
     # Subclass Delegate to increase item height

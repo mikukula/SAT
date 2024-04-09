@@ -67,9 +67,9 @@ class QuestionWidget(QWidget):
         self.question_number_label.setText(ConstantsAndUtilities().formatHTML(f"Question {question_number + 1} out of {len(questions)}", True))
         #Display answer instructions based on answer type
         if(question.answer.type == "single"):
-            self.answer_type_label.setText(ConstantsAndUtilities().formatHTML("Please choose a single most adequate answer", True))
+            self.answer_type_label.setText(ConstantsAndUtilities().formatHTML("Please choose a single most adequate answer", True, font_weight=600))
         else:
-            self.answer_type_label.setText(ConstantsAndUtilities().formatHTML("Please choose all answers that apply", True))
+            self.answer_type_label.setText(ConstantsAndUtilities().formatHTML("Please choose all answers that apply", True, font_weight=600))
 
         #setup the question
         self.question_label.setText(ConstantsAndUtilities().formatHTML(question.text, True))

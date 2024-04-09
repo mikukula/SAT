@@ -206,13 +206,6 @@
         </property>
        </spacer>
       </item>
-      <item row="9" column="1">
-       <widget class="QPushButton" name="createAccountButton">
-        <property name="text">
-         <string>Create Account</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
    </layout>
