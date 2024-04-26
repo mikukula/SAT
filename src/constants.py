@@ -64,6 +64,20 @@ class ConstantsAndUtilities:
         with open(self._config_file, 'w') as json_file:
             json.dump(data, json_file, indent=2)
 
+    def resetPath(self):
+
+        self._database_path = ""
+
+        with open(self._config_file, 'r') as json_file:
+            data = json.load(json_file)
+        
+        if self._database_path_entry not in data:
+            self.loadDatabasePath()
+
+        data[self._database_path_entry] = self._database_path
+
+        with open(self._config_file, 'w') as json_file:
+            json.dump(data, json_file, indent=2)
     
     def validatePath(self, path):
         try:
@@ -105,7 +119,7 @@ class ConstantsAndUtilities:
         if not any(char.isupper() for char in password):
             return False
 
-        # If all conditions are met, the password is strong
+        # If all conditions are met, the password is strong enough
         return True
     
     def checkUsernameReq(self, username):

@@ -191,7 +191,7 @@ class MatplotlibWidget(QWidget):
         # Customize the plot
         ax.set_xticks(index)
         ax.set_xticklabels([user.roleID for user in users])
-        ax.set_yticklabels([])
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1))
         #set up title
         title = question.text

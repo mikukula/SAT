@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Boolean, Integer, String, Sequence, ForeignKey, Enum, CheckConstraint, Date
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base, joinedload
+from base64 import b64encode
 from datetime import datetime
 import os
 import bcrypt
@@ -101,7 +102,9 @@ class DatabaseManager:
     
     def getSurveyToCompleteForUser(self, username):
         with self.get_session() as session:
-            survey = session.query(UserProgress.surveyID).filter(UserProgress.userID == username, UserProgress.survey_finished == False).first()
+            survey = (session.query(UserProgress.surveyID)
+                    .filter(UserProgress.userID == username, UserProgress.survey_finished == False)
+                    .first())
             if(survey is not None):
                 return survey.surveyID
             else:
@@ -125,7 +128,7 @@ class DatabaseManager:
                 session.rollback()
             
 
-
+    #encryption and verification functions
     def verifyUserByPassword(self, userID, password):
         user = self.getUser(userID)
 
@@ -145,7 +148,8 @@ class DatabaseManager:
             return False
 
     def openSessionToken(self, userID):
-        keyring.set_password(self.constants.keyring_service_name, self.constants.keyring_user_name, os.urandom(32))
+        #encoding to ensure all the random bytes can later be retrieved as keyring.get_password uses utf-8 encoding
+        keyring.set_password(self.constants.keyring_service_name, self.constants.keyring_user_name, b64encode(os.urandom(32)).decode(encoding='UTF-8'))
         token = keyring.get_password(self.constants.keyring_service_name, self.constants.keyring_user_name)
         with self.get_session() as session:
             try:
@@ -188,6 +192,10 @@ class DatabaseManager:
 
         return hashed_password
     
+    def hashToken(self, token):
+        hashed_token = bcrypt.hashpw(token, bcrypt.gensalt())
+        return hashed_token
+    #######################################################################
     
     def getUser(self, userID=None, token="no_token"):
         if(token is None):
@@ -394,7 +402,8 @@ def initialise_categories(session):
     category_list = []
 
     for i in range(0, len(defaultCategories.categoryID)):
-        category_list.append(Category(categoryID=defaultCategories.categoryID[i], name=defaultCategories.name[i], rationale=defaultCategories.rationale[i], rating=defaultCategories.rating[i]))
+        category_list.append(Category(categoryID=defaultCategories.categoryID[i], name=defaultCategories.name[i],
+                                       rationale=defaultCategories.rationale[i], rating=defaultCategories.rating[i]))
 
     try:
         session.add_all(category_list)

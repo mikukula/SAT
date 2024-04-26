@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUiType, loadUi
 from PyQt6.QtGui import QIcon
+from sqlalchemy.exc import OperationalError
 import os
 
 #local imports
@@ -59,18 +60,21 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
     def onNextButtonClick(self):
 
         if(not self.constants.validatePath(self.fileTextEdit.toPlainText())):
-            usernameAlert = QMessageBox()
-            usernameAlert.setWindowTitle("Path invalid")
-            usernameAlert.setText("Please choose a correct path")
-            usernameAlert.setIcon(QMessageBox.Icon.Warning)
-            usernameAlert.addButton(QMessageBox.StandardButton.Ok)
-            usernameAlert.exec()
+            self.generateWrongPathMessage()
             return
 
         if (self.radioButtonNewDatabase.isChecked()):
 
             self.constants.setDatabasePath(self.fileTextEdit.toPlainText())
-            self.manager = DatabaseManager()
+            #non-existant path check
+            try:
+                self.manager = DatabaseManager()
+            except OperationalError:
+                print("Operational error")
+                self.constants.resetPath()
+                self.generateWrongPathMessage()
+                return
+            
             self.manager.initialise_database()
             self.setupRegistrationScreen()
 
@@ -80,6 +84,13 @@ class NewSetupWindow(QMainWindow, NewSetupWindow):
             self.loginScreen.show()
             self.close()
 
+    def generateWrongPathMessage(self):
+        usernameAlert = QMessageBox()
+        usernameAlert.setWindowTitle("Path invalid")
+        usernameAlert.setText("Please choose a correct path")
+        usernameAlert.setIcon(QMessageBox.Icon.Warning)
+        usernameAlert.addButton(QMessageBox.StandardButton.Ok)
+        usernameAlert.exec()
 
     ################################# 
     #registration screen is displayed
