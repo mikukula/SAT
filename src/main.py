@@ -1,5 +1,6 @@
 #external library imports
 import sys
+from sqlalchemy.exc import OperationalError
 
 #local imports
 from database.main_database import DatabaseManager
@@ -12,16 +13,25 @@ from PyQt6.QtWidgets import QApplication
 
 
 
+
 #app starting point
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
     constants = ConstantsAndUtilities()
 
-    #if there is no registered database path or no users
+    #if there is no registered database path, wrong path, or no users
     #are found assume a new installation
     #and initialise new setup
-    if(constants.getDatabasePath() == "" or DatabaseManager().getUser() == []):
+    if(constants.getDatabasePath() == ""):
+        window = NewSetupWindow()
+
+    #check for a wrong path
+    try:
+        user = DatabaseManager().getUser()
+        if(user == []):
+            window = NewSetupWindow()
+    except OperationalError:
         window = NewSetupWindow()
 
     #if not a new install check for session token and if found
