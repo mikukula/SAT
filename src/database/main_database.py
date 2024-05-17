@@ -214,7 +214,7 @@ class DatabaseManager:
         return self.get_session().query(User).filter_by(is_technical=is_technical).all()
     
     def getCategories(self):
-        return self.get_session().query(Category).order_by(Category.categoryID).all()
+        return self.get_session().query(Category).all()
     
     def getCategory(self, categoryID):
         return self.get_session().query(Category).filter_by(categoryID=categoryID).first()
@@ -419,7 +419,7 @@ def initialise_answers(session):
     answer_texts = defaultAnswers.answer_text
 
     for i in range(0,len(answer_texts)):
-        if i in {2, 6, 11, 12, 21, 25}:
+        if i in {2, 4, 6, 11, 12, 21, 25}:
             answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.MULTIPLE))
         else:
             answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.SINGLE))

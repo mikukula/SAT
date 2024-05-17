@@ -5,3 +5,8 @@ config.json
 testing
 __pycache__
 user_data
+data_modification.sql
+dissertation_main_document.pdf
+src.zip
+ceo_sample_answers
+cpo_sample_answers

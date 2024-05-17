@@ -49,7 +49,7 @@ class DefaultQuestions:
                                   "Do you promote security as a relevant feature of your own product(s)?",
                                   "Do you believe that the security aspects of your product(s) are important to customers?",
                                   "How familiar are you with the concept of Digital Security by Design (DSbD), which promoted secure-by-design principles in technology development?",
-                                   "Your organisation would select a secure by design technology if it marginally (e.g. <10%) increased the unit cost per device.",
+                                   "Your organisation would select a secure by design technology if it marginally (e.g. less than 10%) increased the unit cost per device.",
                                    "Your organisation would select a secure by design technology if it significantly (e.g. >10%) increased the unit cost per device.",
                                    "Your organisation would select a secure by design technology if it would reduce security vulnerabilities.",
                                    "What are the key factors that your organization would need to consider if adopting a Digital Security by Design technology solution?",

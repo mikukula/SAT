@@ -45,6 +45,14 @@ class QuestionWidget(QWidget):
         
 
     def onCategoryChanged(self, questionCategory, startFromEnd = False):
+
+        #save answers when categories are changed
+        #only if a previous question has already been set up
+        try:
+            self.saveAnswer()
+        except(AttributeError):
+            pass
+
         #set the new active category
         self.active_category_frame = questionCategory
         #set all question category frames to default
@@ -53,10 +61,12 @@ class QuestionWidget(QWidget):
         #highlight the new current active category
         questionCategory.highlightCategory()
         manager = DatabaseManager()
+
         if(startFromEnd == False):
             self.setupQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, questionCategory.category.categoryID)[0])
         else:
             self.setupQuestion(manager.getQuestionsForRoleByCategory(manager.getCurrentUser().roleID, questionCategory.category.categoryID)[-1])
+
 
     def setupQuestion(self, question):
         

@@ -36,7 +36,7 @@ class GraphWidget(QWidget):
         self.questionBox.addItems([question.text for question in questions])
         self.questionBox.currentIndexChanged.connect(lambda: self.redrawGraph())
 
-        self.categoryBox.addItems(["All"] + [category.name for category in reversed(categories)])
+        self.categoryBox.addItems(["All"] + [category.name for category in categories])
         self.categoryBox.currentIndexChanged.connect(lambda: self.repopulateQuestions())
 
         self.viewBox.addItems(["Role", "Response", "Technicality", "Stakeholder"])
