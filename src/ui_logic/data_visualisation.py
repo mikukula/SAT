@@ -123,7 +123,7 @@ class GraphWidget(QWidget):
             return
         
         if(self.viewBox.currentText() != "Stakeholder"):
-            self.current_graph = MatplotlibWidget(current_question, manager.getSurvey(date=datetime.strptime(self.survey_combo_box.currentText(), "%Y-%m-%d").date()), 
+            self.current_graph = MatplotlibWidget(self, current_question, manager.getSurvey(date=datetime.strptime(self.survey_combo_box.currentText(), "%Y-%m-%d").date()), 
                                         self.viewBox.currentText())
         #for stakeholder choice
         else:
@@ -131,7 +131,7 @@ class GraphWidget(QWidget):
             surveys = []
             for date in survey_dates:
                 surveys.append(manager.getSurvey(date=datetime.strptime(date, "%Y-%m-%d").date()))
-            self.current_graph = MatplotlibWidget(current_question, surveys[:5], self.viewBox.currentText(), self.user_combo_box.currentText())
+            self.current_graph = MatplotlibWidget(self, current_question, surveys[:5], self.viewBox.currentText(), self.user_combo_box.currentText())
 
         self.graph_layout.addWidget(self.current_graph)
 
@@ -146,9 +146,10 @@ class GraphWidget(QWidget):
         
 
 class MatplotlibWidget(QWidget):
-    def __init__(self, question, survey, view_type, user=None):
+    def __init__(self, parent_widget, question, survey, view_type, user=None):
         super().__init__()
         self.current_figure = None
+        self.parent_widget = parent_widget
         layout = QVBoxLayout()
 
         if(view_type == "Role"):
@@ -165,39 +166,34 @@ class MatplotlibWidget(QWidget):
         layout.addWidget(self.canvas)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
-        self.setMinimumSize(self.canvas.size())
+        self.parent_widget.graph_frame.setMinimumSize(self.canvas.size())
 
     def plotGraph(self, question, surveyID):
 
         manager = DatabaseManager()
         answers = question.answer.answer.split(';')
-        # Stakeholder types
         users = [user for user in manager.getUser() if user.roleID != 'UNIVERSAL']
 
-        # Create a DataFrame
         df = pd.DataFrame(self.getResponseArray(surveyID, question, answers, users), columns=answers, index=[user.userID for user in users])
 
-        # Create the figure and axis objects
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(8, 5))  
 
-        # Plot the stacked bar chart
         bar_width = 0.5
         index = np.arange(len(users))
         bottom = np.zeros(len(users))
         for i, answer in enumerate(answers):
-            ax.bar(index, df[answer], bar_width, label=answer, bottom=bottom)
+            ax.bar(index, df[answer], bar_width, label=textwrap.fill(answer, width=50), bottom=bottom)
             bottom += df[answer]
 
-        # Customize the plot
         ax.set_xticks(index)
         ax.set_xticklabels([user.roleID for user in users])
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-        ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1))
-        #set up title
+        
+        ax.legend(loc='center left', bbox_to_anchor=(1.02, 0.5))
+        
         title = question.text
         ax.set_title(textwrap.fill(title, width=30))
 
-        # Adjust the layout and display the plot
         plt.tight_layout()
         self.current_figure = fig
         return self.current_figure
@@ -209,7 +205,7 @@ class MatplotlibWidget(QWidget):
         data = self.getResponseArray(surveyID, question, responses, users)
         num_responses = len(responses)
         
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(8, 5))
         
         bar_height = 0.4
         y = np.arange(num_responses)
@@ -221,8 +217,11 @@ class MatplotlibWidget(QWidget):
             left += values
         
         ax.set_yticks(y)
-        ax.set_yticklabels(responses)
+        # Wrap response labels
+        wrapped_responses = [textwrap.fill(response, width=50) for response in responses]
+        ax.set_yticklabels(wrapped_responses)
         
+        # Adjust legend
         ax.legend(title='Role', bbox_to_anchor=(1.02, 1), loc='upper left')
         
         ax.set_xlabel('Number of Responses')
@@ -239,7 +238,7 @@ class MatplotlibWidget(QWidget):
         users = [user for user in DatabaseManager().getUser() if user.roleID != 'UNIVERSAL']
         data = self.getResponseArray(surveyID, question, responses, users)
         num_responses = len(responses)
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(8, 5))
         bar_height = 0.4
         y = np.arange(num_responses)
         
@@ -256,7 +255,8 @@ class MatplotlibWidget(QWidget):
         ax.barh(y, non_technical_data, height=bar_height, left=technical_data, label='Business Stakeholders', color='orange')
         
         ax.set_yticks(y)
-        ax.set_yticklabels(responses)
+        wrapped_responses = [textwrap.fill(response, width=50) for response in responses]
+        ax.set_yticklabels(wrapped_responses)
         ax.legend(title='User Group', bbox_to_anchor=(1.02, 1), loc='upper left')
         ax.set_xlabel('Number of Responses')
         ax.set_title(textwrap.fill(question.text, width=40))
@@ -275,13 +275,13 @@ class MatplotlibWidget(QWidget):
             data.append(survey_data[0])
 
         num_surveys = len(surveyIDs)
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(8, 5))
         bar_height = 0.4
         y = np.arange(num_surveys)
         left = np.zeros(num_surveys)
         for i, response in enumerate(responses):
             values = [data[j][i] for j in range(num_surveys)]
-            ax.barh(y, values, left=left, height=bar_height, label=response)
+            ax.barh(y, values, left=left, height=bar_height, label=textwrap.fill(response, width=50))
             left += values
 
         ax.set_yticks(y)
