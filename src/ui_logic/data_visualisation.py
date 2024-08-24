@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QComboBox, QStyledItemDelegate, QLabel
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QComboBox, QStyledItemDelegate, QLabel, QScrollArea
 from PyQt6.QtGui import QPalette, QStandardItem, QFontMetrics
 from PyQt6.QtCore import Qt, QEvent
 from PyQt6.uic import loadUi
@@ -151,22 +151,34 @@ class MatplotlibWidget(QWidget):
         self.current_figure = None
         self.parent_widget = parent_widget
         layout = QVBoxLayout()
+        self.scroll_area = QScrollArea()
 
-        if(view_type == "Role"):
-            self.canvas = FigureCanvas(self.plotGraph(question, survey.surveyID))
-        elif(view_type == "Response"):
-            self.canvas = FigureCanvas(self.plotHorizontalGraph(question, survey.surveyID))
-        elif(view_type == "Technicality"):
-            self.canvas = FigureCanvas(self.plotHorizontalGraphByTechnicality(question, survey.surveyID))
+        if view_type == "Role":
+            canvas = FigureCanvas(self.plotGraph(question, survey.surveyID))
+        elif view_type == "Response":
+            canvas = FigureCanvas(self.plotHorizontalGraph(question, survey.surveyID))
+        elif view_type == "Technicality":
+            canvas = FigureCanvas(self.plotHorizontalGraphByTechnicality(question, survey.surveyID))
         else:
-            self.canvas = FigureCanvas(self.plotHorizontalGraphByStakeholder(question, [s.surveyID for s in survey], user))
+            canvas = FigureCanvas(self.plotHorizontalGraphByStakeholder(question, [s.surveyID for s in survey], user))
 
-        self.canvas.figure.set_facecolor('none')
-        self.canvas.setStyleSheet("background-color: transparent;")
-        layout.addWidget(self.canvas)
+        canvas.figure.set_facecolor('none')
+        canvas.setStyleSheet("background-color: transparent;")
+
+        self.scroll_area.setWidget(canvas)
+        layout.addWidget(self.scroll_area)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
-        self.parent_widget.graph_frame.setMinimumSize(self.canvas.size())
+
+        # Install event filter on the canvas
+        canvas.installEventFilter(self)
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.Type.Wheel:
+            # If it's a wheel event, we pass it to the scroll area
+            self.scroll_area.wheelEvent(event)
+            return True
+        return super().eventFilter(source, event)
 
     def plotGraph(self, question, surveyID):
 
