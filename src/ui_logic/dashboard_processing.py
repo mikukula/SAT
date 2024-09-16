@@ -11,6 +11,7 @@ from ui_logic.password_change import PasswordChangeWindow
 from ui_logic.question_processing import QuestionWidget, NoQuestionsWidget
 from ui_logic.survey_processing import InviteUsersToSurveyWidget
 from ui_logic.data_visualisation import GraphWidget
+from ui_logic.scores import ScoresWidget
 
 
 #find absolute directory
@@ -38,7 +39,13 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         self.account_management_frame.mousePressEvent = self.onAccountManagementClick
         self.startSurveyFrame.mousePressEvent = self.onStartSurveyClick
         self.view_stats_frame.mousePressEvent = self.onViewStatsClick
+        self.view_scores_frame.mousePressEvent = self.onViewScoresClick
         self.main_frame_layout = QVBoxLayout(self.main_frame)
+
+        #delete unneccessary buttons if not admin (simpler to delete than add)
+        if(user.roleID != "UNIVERSAL"):
+            self.view_stats_frame.deleteLater()
+            self.view_scores_frame.deleteLater()
 
     #clear the main frame before setting it up with different children
     def clearMainFrame(self):
@@ -111,3 +118,10 @@ class DashboardWindow(QMainWindow, DashboardWindow):
             self.graph = GraphWidget()
             
             self.main_frame_layout.addWidget(self.graph.frame)
+
+    def onViewScoresClick(self, event: QMouseEvent):
+        self.clearMainFrame()
+        self.menu_item_label.setText("View Scores")
+
+        view_stats_widget = ScoresWidget()
+        self.main_frame_layout.addWidget(view_stats_widget.scores_frame, alignment=Qt.AlignmentFlag.AlignCenter)

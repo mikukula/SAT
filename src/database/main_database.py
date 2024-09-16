@@ -109,6 +109,13 @@ class DatabaseManager:
                 return survey.surveyID
             else:
                 return None
+            
+    def getSurveysToCompleteForUser(self, username):
+        with self.get_session() as session:
+            survey = (session.query(UserProgress.surveyID)
+                    .filter(UserProgress.userID == username, UserProgress.survey_finished == False)
+                    .all())
+            return survey
 
     def inviteUserToSurvey(self, username, surveyID):
         progress = UserProgress(surveyID=surveyID, userID=username)
@@ -260,6 +267,25 @@ class DatabaseManager:
                 .order_by(Response.responseID)
                 .all()
             )
+        
+        
+    def getResponsesBySurvey(self, surveyID):
+        with self.get_session() as session:
+            return (
+                session.query(Response)
+                .filter(Response.surveyID == surveyID)
+                .all()
+            )
+        
+        
+    def getAnswer(self, answerID):
+        with self.get_session() as session:
+            return (
+                session.query(Answer)
+                .filter(Answer.answerID == answerID)
+                .first()
+            )
+        
 
     def checkUsernameUnique(self, username):
         users = DatabaseManager().getUser()
@@ -283,7 +309,9 @@ class Question(DatabaseBase):
     rationale = Column(String())
     comments = Column(String())
     producer = Column(Boolean, default=False)
+    answer_weights = Column(String())
     weight = Column(Integer, default=1)
+
 
     #relationship setup
     role = relationship('Role', secondary='question_role_association', back_populates='questions')
@@ -419,7 +447,7 @@ def initialise_answers(session):
     answer_texts = defaultAnswers.answer_text
 
     for i in range(0,len(answer_texts)):
-        if i in {2, 4, 6, 11, 12, 21, 25}:
+        if i in {2, 4, 6, 11, 12, 21, 24}:
             answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.MULTIPLE))
         else:
             answer_list.append(Answer(answer=answer_texts[i], type=Answer.TypeEnum.SINGLE))
@@ -469,7 +497,8 @@ def initialise_questions(session):
         category=tdu,
         answer=answers[3],
         rationale=defaultQuestionsRationale[0],
-        comments=None
+        comments=None,
+        answer_weights="+1"
     ))
     #2
     questionsToAdd.append(Question(
@@ -478,7 +507,8 @@ def initialise_questions(session):
         category=tdu,
         answer=answers[4],
         rationale=defaultQuestionsRationale[1],
-        comments=defaultQuestionsComments[0]
+        comments=defaultQuestionsComments[0],
+        answer_weights="5,4,3,1,0"
     ))
     #3
     questionsToAdd.append(Question(
@@ -487,7 +517,8 @@ def initialise_questions(session):
         category=tdu,
         answer=answers[3],
         rationale=defaultQuestionsRationale[2],
-        comments=None
+        comments=None,
+        answer_weights="+1"
     ))
     #4
     questionsToAdd.append(Question(
@@ -496,7 +527,8 @@ def initialise_questions(session):
         category=tdu,
         answer=answers[5],
         rationale=defaultQuestionsRationale[3],
-        comments=defaultQuestionsComments[1]
+        comments=defaultQuestionsComments[1],
+        answer_weights="+1"
     ))
     #5
     questionsToAdd.append(Question(
@@ -505,7 +537,8 @@ def initialise_questions(session):
         category=tdu,
         answer=answers[6],
         rationale=defaultQuestionsRationale[4],
-        comments=None
+        comments=None,
+        answer_weights="1,2,3,5,0"
     ))
     #6
     questionsToAdd.append(Question(
@@ -514,74 +547,82 @@ def initialise_questions(session):
         category=tdu,
         answer=answers[1],
         rationale=defaultQuestionsRationale[5],
-        comments=defaultQuestionsComments[2]
+        comments=defaultQuestionsComments[2],
+        answer_weights="1,2,3,4,5"
     ))
 
     #iab questions
-    #1
+    #7
     questionsToAdd.append(Question(
         text=defaultQuestionsText[6],
         role=[ceo, cfo, ciso, cio, cto],
         category=iab,
         answer=answers[2],
         rationale=defaultQuestionsRationale[6],
-        comments=defaultQuestionsComments[3]
+        comments=defaultQuestionsComments[3],
+        answer_weights="5,4,3,2,1,0"
     ))
-    #2
+    #8
     questionsToAdd.append(Question(
         text=defaultQuestionsText[7],
         role=[ceo, cfo, ciso, cio, cto],
         category=iab,
         answer=answers[1],
         rationale=defaultQuestionsRationale[7],
-        comments=defaultQuestionsComments[3]
+        comments=defaultQuestionsComments[3],
+        answer_weights="5,4,3,2,1"
     ))
-    #3
+    #9
     questionsToAdd.append(Question(
         text=defaultQuestionsText[8],
         role=[ceo, cfo, ciso, cio, cto],
         category=iab,
         answer=answers[7],
         rationale=defaultQuestionsRationale[8],
-        comments=defaultQuestionsComments[3]
+        comments=defaultQuestionsComments[3],
+        answer_weights="+1"
     ))
-    #4
+    #10
     questionsToAdd.append(Question(
         text=defaultQuestionsText[9],
         role=[ceo, cfo, ciso, cio, cto],
         category=iab,
         answer=answers[7],
         rationale=defaultQuestionsRationale[9],
-        comments=None
+        comments=None,
+        answer_weights="+1"
     ))
-    #5
+    #11
     questionsToAdd.append(Question(
         text=defaultQuestionsText[10],
         role=[ciso, cio, cto],
         category=iab,
         answer=answers[8],
         rationale=defaultQuestionsRationale[10],
-        comments=defaultQuestionsComments[4]
+        comments=defaultQuestionsComments[4],
+        answer_weights="1,2,3,5,0"
     ))
-    #6
+    #12
     questionsToAdd.append(Question(
         text=defaultQuestionsText[11],
         role=[ciso, cio, cto],
         category=iab,
         answer=answers[8],
         rationale=defaultQuestionsRationale[11],
-        comments=defaultQuestionsComments[5]
+        comments=defaultQuestionsComments[5],
+        answer_weights="1,2,3,5,0"
     ))
-    #7
+    #13
     questionsToAdd.append(Question(
         text=defaultQuestionsText[12],
         role=[ciso, cio, cto],
         category=iab,
         answer=answers[1],
         rationale=None,
-        comments=defaultQuestionsComments[6]
+        comments=defaultQuestionsComments[6],
+        answer_weights="5,4,3,2,1"
     ))
-    #8
+    #14
     questionsToAdd.append(Question(
         text=defaultQuestionsText[13],
         role=[ceo, ciso, cio, cto],
@@ -589,193 +630,214 @@ def initialise_questions(session):
         answer=answers[9],
         rationale=defaultQuestionsRationale[12],
         comments=defaultQuestionsComments[7],
-        producer=True
+        producer=True,
+        answer_weights="1,2,3,4,5"
     ))
-    #9
+    #15
     questionsToAdd.append(Question(
         text=defaultQuestionsText[14],
         role=[ceo, cfo, ciso, cio, cto],
         category=iab,
         answer=answers[10],
         rationale=defaultQuestionsRationale[13],
-        comments=defaultQuestionsComments[8]
+        comments=defaultQuestionsComments[8],
+        answer_weights="1,2,3,4,5"
     ))
-    #10
+    #16
     questionsToAdd.append(Question(
         text=defaultQuestionsText[15],
         role=[ceo, cfo, ciso, cio, cto],
         category=iab,
         answer=answers[2],
         rationale=defaultQuestionsRationale[14],
-        comments=defaultQuestionsComments[8]
+        comments=defaultQuestionsComments[8],
+        answer_weights="5,4,3,2,1,0"
     ))
 
     #spi questions
-    #1
+    #17
     questionsToAdd.append(Question(
         text=defaultQuestionsText[16],
         role=default,
         category=spi,
         answer=answers[1],
         rationale=defaultQuestionsRationale[15],
-        comments=defaultQuestionsComments[9]
+        comments=defaultQuestionsComments[9],
+        answer_weights="5,4,3,2,1"
     ))
-    #2
+    #18
     questionsToAdd.append(Question(
         text=defaultQuestionsText[17],
         role=default,
         category=spi,
         answer=answers[1],
         rationale=defaultQuestionsRationale[16],
-        comments=None
+        comments=None,
+        answer_weights="5,4,3,2,1"
     ))
-    #3
+    #19
     questionsToAdd.append(Question(
         text=defaultQuestionsText[18],
         role=default,
         category=spi,
         answer=answers[11],
         rationale=defaultQuestionsRationale[17],
-        comments=None
+        comments=None,
+        answer_weights="1,2,3,4,5"
     ))
-    #4
+    #20
     questionsToAdd.append(Question(
         text=defaultQuestionsText[19],
         role=default,
         category=spi,
         answer=answers[1],
         rationale=defaultQuestionsRationale[18],
-        comments=None
+        comments=None,
+        answer_weights="5,4,3,2,1"
     ))
-    #5
+    #21
     questionsToAdd.append(Question(
         text=defaultQuestionsText[20],
         role=default,
         category=spi,
         answer=answers[12],
         rationale=defaultQuestionsRationale[19],
-        comments=None
+        comments=None,
+        answer_weights="+1"
     ))
-    #6
+    #22
     questionsToAdd.append(Question(
         text=defaultQuestionsText[21],
         role=default,
         category=spi,
         answer=answers[13],
         rationale=defaultQuestionsRationale[20],
-        comments=defaultQuestionsComments[10]
+        comments=defaultQuestionsComments[10],
+        answer_weights="-1"
     ))
-    #7
+    #23
     questionsToAdd.append(Question(
         text=defaultQuestionsText[22],
         role=default,
         category=spi,
         answer=answers[1],
         rationale=defaultQuestionsRationale[21],
-        comments=None
+        comments=None,
+        answer_weights="5,4,3,2,1"
     ))
-    #8
+    #24
     questionsToAdd.append(Question(
         text=defaultQuestionsText[23],
         role=default,
         category=spi,
         answer=answers[1],
         rationale=defaultQuestionsRationale[22],
-        comments=None
+        comments=None,
+        answer_weights="5,4,3,2,1"
     ))
-    #9
+    #25
     questionsToAdd.append(Question(
         text=defaultQuestionsText[24],
         role=default,
         category=spi,
         answer=answers[1],
         rationale=defaultQuestionsRationale[23],
-        comments=None
+        comments=None,
+        answer_weights="5,4,3,2,1"
     ))
-    #10
+    #26
     questionsToAdd.append(Question(
         text=defaultQuestionsText[25],
         role=default,
         category=spi,
         answer=answers[14],
         rationale=defaultQuestionsRationale[24],
-        comments=defaultQuestionsComments[11]
+        comments=defaultQuestionsComments[11],
+        answer_weights="1,2,3,5"
     ))
 
     #sta questions
-    #1
+    #27
     questionsToAdd.append(Question(
         text=defaultQuestionsText[26],
         role=default,
         category=sta,
         answer=answers[12],
         rationale=defaultQuestionsRationale[25],
-        comments=defaultQuestionsComments[12]
+        comments=defaultQuestionsComments[12],
+        answer_weights="+1"
     ))
-    #2
+    #28
     questionsToAdd.append(Question(
         text=defaultQuestionsText[27],
         role=default,
         category=sta,
         answer=answers[15],
         rationale=defaultQuestionsRationale[26],
-        comments=None
+        comments=None,
+        answer_weights="1,2,3,5"
     ))
-    #3
+    #29
     questionsToAdd.append(Question(
         text=defaultQuestionsText[28],
         role=default,
         category=sta,
         answer=answers[15],
         rationale=defaultQuestionsRationale[27],
-        comments=None
+        comments=None,
+        answer_weights="1,2,3,5"
     ))
-    #4
+    #30
     questionsToAdd.append(Question(
         text=defaultQuestionsText[29],
         role=default,
         category=sta,
         answer=answers[16],
         rationale=defaultQuestionsRationale[28],
-        comments=None
+        comments=None,
+        answer_weights="5,3,1"
     ))
-    #5
+    #31
     questionsToAdd.append(Question(
         text=defaultQuestionsText[30],
         role=default,
         category=sta,
         answer=answers[17],
         rationale=defaultQuestionsRationale[29],
-        comments=None
+        comments=None,
+        answer_weights="5,4,3,2,1"
     ))
-    #6
+    #32
     questionsToAdd.append(Question(
         text=defaultQuestionsText[31],
         role=default,
         category=sta,
         answer=answers[18],
         rationale=defaultQuestionsRationale[30],
-        comments=defaultQuestionsComments[13]
+        comments=defaultQuestionsComments[13],
+        answer_weights="1,3,5"
     ))
-    #7
+    #33
     questionsToAdd.append(Question(
         text=defaultQuestionsText[32],
         role=default,
         category=sta,
         answer=answers[1],
         rationale=defaultQuestionsRationale[31],
-        comments=None
+        comments=None,
+        answer_weights="5,4,3,2,1"
     ))
-    #8
+    #34
     questionsToAdd.append(Question(
         text=defaultQuestionsText[33],
         role=[ciso, cio, cto],
         category=sta,
         answer=answers[19],
         rationale=defaultQuestionsRationale[32],
-        comments=None
+        comments=None,
+        answer_weights="1,3,5,0"
     ))
-    #9
+    #35
     questionsToAdd.append(Question(
         text=defaultQuestionsText[34],
         role=[ceo, cfo, ciso, cio, cto],
@@ -783,9 +845,10 @@ def initialise_questions(session):
         answer=answers[1],
         rationale=defaultQuestionsRationale[33],
         comments=defaultQuestionsComments[14],
-        producer=True
+        producer=True,
+        answer_weights="5,4,3,2,1"
     ))
-    #10
+    #36
     questionsToAdd.append(Question(
         text=defaultQuestionsText[35],
         role=[ceo, cfo, ciso, cio, cto],
@@ -793,9 +856,10 @@ def initialise_questions(session):
         answer=answers[1],
         rationale=defaultQuestionsRationale[34],
         comments=defaultQuestionsComments[14],
-        producer=True
+        producer=True,
+        answer_weights="5,4,3,2,1"
     ))
-    #11
+    #37
     questionsToAdd.append(Question(
         text=defaultQuestionsText[36],
         role=[ceo, cfo, ciso, cio, cto],
@@ -803,64 +867,71 @@ def initialise_questions(session):
         answer=answers[1],
         rationale=defaultQuestionsRationale[35],
         comments=defaultQuestionsComments[14],
-        producer=True
+        producer=True,
+        answer_weights="5,4,3,2,1"
     ))
     #dsa questions
-    #1
+    #38
     questionsToAdd.append(Question(
         text=defaultQuestionsText[37],
         role=default,
         category=dsa,
         answer=answers[20],
         rationale=defaultQuestionsRationale[36],
-        comments=defaultQuestionsComments[15]
+        comments=defaultQuestionsComments[15],
+        answer_weights="5,3,2,1"
     ))
-    #2
+    #39
     questionsToAdd.append(Question(
         text=defaultQuestionsText[38],
         role=default,
         category=dsa,
         answer=answers[1],
         rationale=defaultQuestionsRationale[37],
-        comments=defaultQuestionsComments[16]
+        comments=defaultQuestionsComments[16],
+        answer_weights="5,4,3,2,1"
     ))
-    #3
+    #40
     questionsToAdd.append(Question(
         text=defaultQuestionsText[39],
         role=default,
         category=dsa,
         answer=answers[1],
         rationale=defaultQuestionsRationale[38],
-        comments=defaultQuestionsComments[16]
+        comments=defaultQuestionsComments[16],
+        answer_weights="5,4,3,2,1"
     ))
-    #4
+    #41
     questionsToAdd.append(Question(
         text=defaultQuestionsText[40],
         role=default,
         category=dsa,
         answer=answers[21],
         rationale=defaultQuestionsRationale[39],
-        comments=defaultQuestionsComments[17]
+        comments=defaultQuestionsComments[17],
+        answer_weights="5,3,2,1"
     ))
-    #5
+    #42
     questionsToAdd.append(Question(
         text=defaultQuestionsText[41],
         role=default,
         category=dsa,
         answer=answers[22],
         rationale=defaultQuestionsRationale[40],
-        comments=defaultQuestionsComments[18]
+        comments=defaultQuestionsComments[18],
+        answer_weights="-1"
     ))
-    #6
+    #43
     questionsToAdd.append(Question(
         text=defaultQuestionsText[42],
         role=default,
         category=dsa,
         answer=answers[13],
         rationale=defaultQuestionsRationale[41],
-        comments=defaultQuestionsComments[19]
+        comments=defaultQuestionsComments[19],
+        answer_weights="-1"
     ))
-    #7
+    #44
     questionsToAdd.append(Question(
         text=defaultQuestionsText[43],
         role=[ceo, ciso, cio, cto],
@@ -868,9 +939,10 @@ def initialise_questions(session):
         answer=answers[23],
         rationale=defaultQuestionsRationale[42],
         comments=defaultQuestionsComments[20],
-        producer=True
+        producer=True,
+        answer_weights="5,1,0,0"
     ))
-    #8
+    #45
     questionsToAdd.append(Question(
         text=defaultQuestionsText[44],
         role=[ceo, ciso, cio, cto],
@@ -878,9 +950,10 @@ def initialise_questions(session):
         answer=answers[24],
         rationale=defaultQuestionsRationale[43],
         comments=defaultQuestionsComments[21],
-        producer=True
+        producer=True,
+        answer_weights="5,1,3,0"
     ))
-    #9
+    #46
     questionsToAdd.append(Question(
         text=defaultQuestionsText[45],
         role=[ceo, ciso, cio, cto],
@@ -888,7 +961,8 @@ def initialise_questions(session):
         answer=answers[25],
         rationale=defaultQuestionsRationale[44],
         comments=defaultQuestionsComments[21],
-        producer=True
+        producer=True,
+        answer_weights="-1"
     ))
 
     try:
