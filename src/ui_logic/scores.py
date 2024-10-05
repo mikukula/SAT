@@ -29,11 +29,27 @@ class ScoresWidget(QWidget):
         responses = self.manager.getResponsesBySurvey(current_surveyid)
         categories = self.manager.getCategories()
         scores = [self.calculateScorePerCategory(responses, category.categoryID) for category in categories]
+        score_strings = [str(score) + '/5' for score in scores]
+        ratings = [(scores[0]+scores[1])/2,
+                           (scores[2]+scores[3])/2, scores[4]]
+        rating_strings = ["""<span style=" font-size:12pt; color:#007AFF">""" + f"{rating:.2f}/5" + "</span>"
+                           for rating in ratings]
+        overall_score = sum(ratings)/len(ratings)
+        overall_score_string = ("""<span style=" font-size:16pt; color:#00B5B8">""" + f"{overall_score:.2f}/5" +
+                                "</span>")
+
         #set up score labels
-        self.tdu_score.setText(str(scores[0]))
-        self.iab_score.setText(str(scores[1]))
-        self.spi_score.setText(str(scores[2]))
-        self.dsa_score.setText(str(scores[3]))
+        self.tdu_score.setText(score_strings[0])
+        self.iab_score.setText(score_strings[1])
+        self.spi_score.setText(score_strings[2])
+        self.sta_score.setText(score_strings[3])
+        self.dsa_score.setText(score_strings[4])
+
+        #set up total ratings
+        self.need_score.setText(rating_strings[0])
+        self.attitude_score.setText(rating_strings[1])
+        self.awareness_score.setText(rating_strings[2])
+        self.overall_score.setText(overall_score_string)
         
 
     def getResponseWeight(self, response):

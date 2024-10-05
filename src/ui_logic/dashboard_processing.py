@@ -121,7 +121,7 @@ class DashboardWindow(QMainWindow, DashboardWindow):
 
     def onViewScoresClick(self, event: QMouseEvent):
         self.clearMainFrame()
-        self.menu_item_label.setText("View Scores")
+        self.menu_item_label.setText("View Ratings")
 
         view_stats_widget = ScoresWidget()
         self.main_frame_layout.addWidget(view_stats_widget.scores_frame, alignment=Qt.AlignmentFlag.AlignCenter)
