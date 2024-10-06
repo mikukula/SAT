@@ -286,6 +286,14 @@ class DatabaseManager:
                 .first()
             )
         
+    def getAnswers(self):
+        with self.get_session() as session:
+            return (
+                session.query(Answer)
+                .order_by(Answer.answerID)
+                .all()
+            )
+        
 
     def checkUsernameUnique(self, username):
         users = DatabaseManager().getUser()
