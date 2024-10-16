@@ -183,10 +183,10 @@ class GraphWidget:
         # Data for plotting
         categories = ['Need', 'Attitude', 'Awareness', 'Overall']
         all_values = list(ratings) + [overall_score]
-        colors = ['#007AFF',  # Blue
-                   '#00B5B8',  # Teal
-                   '#FFB400',  # Orange
-                   '#FF3B30']  # Red
+        colors = [(0/255, 122/255, 255/255, 0.4),  # Blue with transparency
+                 (0/255, 122/255, 255/255, 0.4),  # Blue with transparency
+                 (0/255, 122/255, 255/255, 0.4),  # Blue with transparency
+                 (0/255, 122/255, 255/255, 1.0)]  # Solid blue for the last bar
         
         # Create bars
         bars = ax.bar(categories, all_values, color=colors)
@@ -208,7 +208,7 @@ class GraphWidget:
         
         # Create canvas
         canvas = FigureCanvas(fig)
-        canvas.setStyleSheet("background-color:transparent;")
+        canvas.setStyleSheet("background-color:white;")
         
         # Adjust layout to prevent label cutoff
         fig.tight_layout()
