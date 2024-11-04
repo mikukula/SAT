@@ -1,6 +1,7 @@
 import os
 from PyQt6.uic import loadUi
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget, QVBoxLayout
+from PyQt6.QtCore import Qt
 from concurrent.futures import ThreadPoolExecutor
 
 import matplotlib.pyplot as plt
@@ -16,6 +17,7 @@ class ScoresWidget(QWidget):
         self.loadUI()
         self.setupComboBoxes()
         self.current_graph = None
+        self.scroll_widget.setLayout(QVBoxLayout())
         #start calculation on start
         self.chooseDisplayType()
 
@@ -29,8 +31,9 @@ class ScoresWidget(QWidget):
         self.surveyBox.addItems(str(survey.date) for survey in surveys)
         self.surveyBox.currentTextChanged.connect(lambda: self.chooseDisplayType())
 
-        self.typeBox.addItems(["List", "Graph"])
+        self.typeBox.addItems(["List", "Chart"])
         self.typeBox.currentTextChanged.connect(lambda: self.chooseDisplayType())
+        
 
     def chooseDisplayType(self):
 
@@ -68,23 +71,23 @@ class ScoresWidget(QWidget):
         display_widget.overall_score.setText(overall_score_string)
 
         #add the textual list to the display frame
-        self.display_frame.layout().addWidget(display_widget)
+        self.scroll_widget.layout().addWidget(display_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def displayGraph(self, ratings, overall_score):
         self.clear_graph()
         # Create and add the graph
         self.current_graph = GraphWidget.create_ratings_graph(ratings, overall_score)
-        self.display_frame.layout().addWidget(self.current_graph)
+        self.scroll_widget.layout().addWidget(self.current_graph)
 
     def clear_graph(self):
         """
         Cleans up and removes the current graph if it exists.
         It also handles clearing up the display_widget so can be called for both uses.
         """
-        if self.display_frame.layout():
+        if self.scroll_widget.layout():
             # Remove all widgets from the layout
-            while self.display_frame.layout().count():
-                item = self.display_frame.layout().takeAt(0)
+            while self.scroll_widget.layout().count():
+                item = self.scroll_widget.layout().takeAt(0)
                 if item.widget():
                     item.widget().deleteLater()
 

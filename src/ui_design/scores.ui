@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>661</width>
-    <height>565</height>
+    <width>664</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,12 @@
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QFrame" name="scores_frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -104,27 +110,23 @@
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="display_frame">
-        <property name="minimumSize">
-         <size>
-          <width>439</width>
-          <height>490</height>
-         </size>
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="sizeAdjustPolicy">
+         <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+        <property name="widgetResizable">
+         <bool>true</bool>
         </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="topMargin">
-          <number>0</number>
+        <widget class="QWidget" name="scroll_widget">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>624</width>
+           <height>493</height>
+          </rect>
          </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-        </layout>
+        </widget>
        </widget>
       </item>
      </layout>

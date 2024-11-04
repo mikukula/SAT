@@ -36,11 +36,18 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>631</width>
-           <height>399</height>
+           <width>871</width>
+           <height>384</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Please select the stakeholders that you wish to involve in this round of&lt;br/&gt;assessment, and then click the button below to invite them&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QFrame" name="frame">
             <property name="frameShape">

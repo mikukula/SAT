@@ -28,6 +28,7 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         self.setupUi(self)
         self.setupUiElements()
         self.onStartSurveyClick(None)
+        self.showMaximized()
 
     def setupUiElements(self):
         self.setWindowIcon(QIcon(ConstantsAndUtilities().main_icon_location))
@@ -124,4 +125,4 @@ class DashboardWindow(QMainWindow, DashboardWindow):
         self.menu_item_label.setText("View Ratings")
 
         view_stats_widget = ScoresWidget()
-        self.main_frame_layout.addWidget(view_stats_widget.scores_frame, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_frame_layout.addWidget(view_stats_widget.scores_frame)
