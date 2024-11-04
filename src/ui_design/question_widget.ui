@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QFrame" name="question_frame">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
@@ -38,7 +38,7 @@
          </size>
         </property>
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
@@ -76,7 +76,7 @@
          </size>
         </property>
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
@@ -85,7 +85,7 @@
          <item>
           <widget class="QLabel" name="question_number_label">
            <property name="text">
-            <string/>
+            <string />
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -95,7 +95,7 @@
          <item>
           <widget class="QLabel" name="answer_type_label">
            <property name="text">
-            <string/>
+            <string />
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -105,7 +105,7 @@
          <item>
           <widget class="QLabel" name="question_label">
            <property name="text">
-            <string/>
+            <string />
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -133,12 +133,12 @@
              <item>
               <widget class="QFrame" name="answerFrame">
                <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
+                <enum>QFrame::NoFrame</enum>
                </property>
                <property name="frameShadow">
                 <enum>QFrame::Raised</enum>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_3"/>
+               <layout class="QVBoxLayout" name="verticalLayout_3" />
               </widget>
              </item>
             </layout>
@@ -154,7 +154,7 @@
             </size>
            </property>
            <property name="text">
-            <string/>
+            <string />
            </property>
           </widget>
          </item>
@@ -173,6 +173,6 @@
    </item>
   </layout>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

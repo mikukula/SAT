@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -18,7 +18,7 @@
     <item>
      <layout class="QGridLayout" name="gridLayout">
       <item row="5" column="2">
-       <widget class="QLineEdit" name="passwordEdit"/>
+       <widget class="QLineEdit" name="passwordEdit" />
       </item>
       <item row="9" column="3">
        <widget class="QPushButton" name="createAccountButton">
@@ -28,7 +28,7 @@
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QLineEdit" name="usernameEdit"/>
+       <widget class="QLineEdit" name="usernameEdit" />
       </item>
       <item row="3" column="1">
        <widget class="QLabel" name="label_2">
@@ -57,7 +57,7 @@
          </font>
         </property>
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;PLEASE CREATE A&lt;br/&gt;NEW ADMINISTRATOR ACCOUNT&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align="center"&gt;PLEASE CREATE A&lt;br/&gt;NEW ADMINISTRATOR ACCOUNT&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -167,7 +167,7 @@
             </size>
            </property>
            <property name="text">
-            <string/>
+            <string />
            </property>
            <property name="pixmap">
             <pixmap>../../resources/logos/logo_transparent.png</pixmap>
@@ -181,7 +181,7 @@
           </widget>
          </item>
         </layout>
-       </widget>
+       <property name="frameShape"><enum>QFrame::NoFrame</enum></property></widget>
       </item>
      </layout>
     </item>
@@ -197,8 +197,8 @@
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>
