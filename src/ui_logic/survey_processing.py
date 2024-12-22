@@ -36,7 +36,8 @@ class InviteUsersToSurveyWidget(QWidget):
         manager = DatabaseManager()
         survey_id = manager.createSurvey()
         for frame in self.user_frames:
-            manager.inviteUserToSurvey(frame.username, manager.getSurvey(survey_id).surveyID)
+            if(frame.check_box.isChecked()):
+                manager.inviteUserToSurvey(frame.username, manager.getSurvey(survey_id).surveyID)
 
         submitted_box = QMessageBox()
         submitted_box.setWindowTitle("Survey created")

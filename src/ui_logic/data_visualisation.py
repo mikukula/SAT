@@ -39,7 +39,7 @@ class GraphWidget(QWidget):
         self.categoryBox.addItems(["All"] + [category.name for category in categories])
         self.categoryBox.currentIndexChanged.connect(lambda: self.repopulateQuestions())
 
-        self.viewBox.addItems(["Role", "Response", "Technicality", "Stakeholder"])
+        self.viewBox.addItems(["Role", "Response", "Stakeholder Group", "Stakeholder Type"])
         self.viewBox.currentIndexChanged.connect(lambda: self.redrawGraph())
 
         self.graph_layout = QVBoxLayout(self.graph_frame)
@@ -101,10 +101,10 @@ class GraphWidget(QWidget):
     def redrawGraph(self):
 
         #repopulate survey list for multiple or single choice
-        if(self.viewBox.currentText() == "Stakeholder" and type(self.survey_combo_box) == QComboBox):
+        if(self.viewBox.currentText() == "Stakeholder Type" and type(self.survey_combo_box) == QComboBox):
             self.repopulateSurveys(True)
             self.addUserComboBox()
-        elif(self.viewBox.currentText() != "Stakeholder" and type(self.survey_combo_box) == CheckableComboBox):
+        elif(self.viewBox.currentText() != "Stakeholder Type" and type(self.survey_combo_box) == CheckableComboBox):
             self.repopulateSurveys(False)
             self.removeUserComboBox()
         #remove the previous graph
@@ -122,7 +122,7 @@ class GraphWidget(QWidget):
         if(self.survey_combo_box.currentText() == ""):
             return
         
-        if(self.viewBox.currentText() != "Stakeholder"):
+        if(self.viewBox.currentText() != "Stakeholder Type"):
             self.current_graph = MatplotlibWidget(self, current_question, manager.getSurvey(date=datetime.strptime(self.survey_combo_box.currentText(), "%Y-%m-%d").date()), 
                                         self.viewBox.currentText())
         #for stakeholder choice
@@ -157,7 +157,7 @@ class MatplotlibWidget(QWidget):
             canvas = FigureCanvas(self.plotGraph(question, survey.surveyID))
         elif view_type == "Response":
             canvas = FigureCanvas(self.plotHorizontalGraph(question, survey.surveyID))
-        elif view_type == "Technicality":
+        elif view_type == "Stakeholder Group":
             canvas = FigureCanvas(self.plotHorizontalGraphByTechnicality(question, survey.surveyID))
         else:
             canvas = FigureCanvas(self.plotHorizontalGraphByStakeholder(question, [s.surveyID for s in survey], user))
