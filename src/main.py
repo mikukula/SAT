@@ -10,14 +10,27 @@ from ui_logic.login import LoginWindow
 
 #ui imports
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QPalette, QColor
 
-
-
+def enforce_light_mode(app):
+    # Force light palette
+    palette = QPalette()
+    palette.setColor(QPalette.ColorRole.Window, QColor(240, 240, 240))
+    palette.setColor(QPalette.ColorRole.WindowText, QColor(0, 0, 0))
+    palette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))
+    palette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))
+    palette.setColor(QPalette.ColorRole.Button, QColor(240, 240, 240))
+    palette.setColor(QPalette.ColorRole.ButtonText, QColor(0, 0, 0))
+    app.setPalette(palette)
 
 #app starting point
 if __name__ == '__main__':
-    
     app = QApplication(sys.argv)
+    
+    # Enforce light mode
+    enforce_light_mode(app)
+    app.setStyle('Fusion')  # Use Fusion style for consistent look
+    
     constants = ConstantsAndUtilities()
 
     #if there is no registered database path, wrong path, or no users
@@ -48,4 +61,3 @@ if __name__ == '__main__':
 
     window.show()
     app.exec()
-    
