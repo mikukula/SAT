@@ -170,7 +170,7 @@
             <string />
            </property>
            <property name="pixmap">
-            <pixmap>../../resources/logos/logo_transparent.png</pixmap>
+            <pixmap>../resources/logos/logo_transparent.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>

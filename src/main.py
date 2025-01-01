@@ -1,5 +1,6 @@
 #external library imports
 import sys
+import os
 from sqlalchemy.exc import OperationalError
 
 #local imports
@@ -10,7 +11,7 @@ from ui_logic.login import LoginWindow
 
 #ui imports
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtGui import QPalette, QColor, QIcon
 
 def enforce_light_mode(app):
     # Force light palette
@@ -26,6 +27,9 @@ def enforce_light_mode(app):
 #app starting point
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    # Set application-wide icon
+    app.setWindowIcon(QIcon(os.path.join('src', 'resources', 'logos', 'favicon.png')))
     
     # Enforce light mode
     enforce_light_mode(app)

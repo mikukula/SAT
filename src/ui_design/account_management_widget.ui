@@ -78,7 +78,7 @@
           <string />
          </property>
          <property name="pixmap">
-          <pixmap>../../resources/icons/change-password-icon.png</pixmap>
+          <pixmap>../resources/icons/change-password-icon.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -128,7 +128,7 @@
           <string />
          </property>
          <property name="pixmap">
-          <pixmap>../../resources/icons/logout.svg</pixmap>
+          <pixmap>../resources/icons/logout.svg</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -200,7 +200,7 @@
        <string />
       </property>
       <property name="pixmap">
-       <pixmap>../../resources/icons/add_user.png</pixmap>
+       <pixmap>../resources/icons/add_user.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
