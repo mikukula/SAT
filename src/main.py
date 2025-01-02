@@ -24,8 +24,20 @@ def enforce_light_mode(app):
     palette.setColor(QPalette.ColorRole.ButtonText, QColor(0, 0, 0))
     app.setPalette(palette)
 
+def setPath():
+    if getattr(sys, 'frozen', False):
+        # If running as PyInstaller bundle
+        os.chdir(os.path.dirname(sys.executable))
+    else:
+        # If running in development go a directory above main
+        os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 #app starting point
 if __name__ == '__main__':
+
+    #set the path to the directory of the executable/.py file
+    setPath()
+        
     app = QApplication(sys.argv)
 
     # Set application-wide icon
